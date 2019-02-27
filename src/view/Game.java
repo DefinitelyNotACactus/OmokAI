@@ -5,16 +5,28 @@
  */
 package view;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author david
  */
-public class Game extends javax.swing.JFrame {
-
+public class Game extends JFrame {
+    
+    private int player;
+    private int turn;
+    private boolean finished;
+    private Piece[][] board;
+    
     /**
      * Creates new form Game
      */
     public Game() {
+        player = 1;
+        turn = -1;
+        finished = false;
+        board = new Piece[15][15];
         initComponents();
     }
 
@@ -30,14 +42,17 @@ public class Game extends javax.swing.JFrame {
         gamePanel = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
         btReady = new javax.swing.JButton();
+        btStart = new javax.swing.JButton();
         btExit = new javax.swing.JButton();
         turnLabel = new javax.swing.JLabel();
-        currentPlayerLabel = new javax.swing.JLabel();
         timerLabel = new javax.swing.JLabel();
+        player1TurnLabel = new javax.swing.JLabel();
         piece1Label = new javax.swing.JLabel();
         info1Label = new javax.swing.JLabel();
+        player2TurnLabel = new javax.swing.JLabel();
         piece2Label = new javax.swing.JLabel();
         info2Label = new javax.swing.JLabel();
+        boardPanel = new javax.swing.JPanel();
         actionsPanel = new javax.swing.JPanel();
         btAbsten = new javax.swing.JButton();
         btDraw = new javax.swing.JButton();
@@ -45,13 +60,15 @@ public class Game extends javax.swing.JFrame {
         backgroundLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Omok");
+        setLocation(new java.awt.Point(200, 200));
         setResizable(false);
         setSize(new java.awt.Dimension(734, 429));
 
         gamePanel.setSize(new java.awt.Dimension(734, 429));
         gamePanel.setLayout(null);
 
-        titleLabel.setText("Title label");
+        titleLabel.setText("(G)omok(u)");
         gamePanel.add(titleLabel);
         titleLabel.setBounds(510, 20, 210, 16);
 
@@ -61,8 +78,28 @@ public class Game extends javax.swing.JFrame {
         btReady.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btReady.disabled.0.png"))); // NOI18N
         btReady.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btReady.pressed.0.png"))); // NOI18N
         btReady.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btReady.mouseOver.0.png"))); // NOI18N
+        btReady.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btReadyActionPerformed(evt);
+            }
+        });
         gamePanel.add(btReady);
         btReady.setBounds(623, 242, 97, 29);
+        btReady.setVisible(false);
+
+        btStart.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btStart.normal.0.png"))); // NOI18N
+        btStart.setBorderPainted(false);
+        btStart.setContentAreaFilled(false);
+        btStart.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btStart.disabled.0.png"))); // NOI18N
+        btStart.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btStart.pressed.0.png"))); // NOI18N
+        btStart.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btStart.mouseOver.0.png"))); // NOI18N
+        btStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btStartActionPerformed(evt);
+            }
+        });
+        gamePanel.add(btStart);
+        btStart.setBounds(623, 242, 97, 29);
 
         btExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btExit.normal.0.png"))); // NOI18N
         btExit.setBorderPainted(false);
@@ -70,20 +107,26 @@ public class Game extends javax.swing.JFrame {
         btExit.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btExit.normal.0.png"))); // NOI18N
         btExit.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btExit.mouseOver.0.png"))); // NOI18N
         btExit.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btExit.pressed.0.png"))); // NOI18N
+        btExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btExitActionPerformed(evt);
+            }
+        });
         gamePanel.add(btExit);
         btExit.setBounds(678, 403, 43, 18);
 
-        turnLabel.setText("Turn label");
+        turnLabel.setText("Press start to begin");
         gamePanel.add(turnLabel);
         turnLabel.setBounds(15, 404, 260, 16);
-
-        currentPlayerLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.turn.png"))); // NOI18N
-        gamePanel.add(currentPlayerLabel);
-        currentPlayerLabel.setBounds(401, 56, 81, 176);
 
         timerLabel.setText("00:00");
         gamePanel.add(timerLabel);
         timerLabel.setBounds(300, 404, 80, 16);
+
+        player1TurnLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.turn.png"))); // NOI18N
+        gamePanel.add(player1TurnLabel);
+        player1TurnLabel.setBounds(401, 56, 81, 176);
+        player1TurnLabel.setVisible(false);
 
         piece1Label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Omok.stone.0.white.0.png"))); // NOI18N
         gamePanel.add(piece1Label);
@@ -93,6 +136,11 @@ public class Game extends javax.swing.JFrame {
         gamePanel.add(info1Label);
         info1Label.setBounds(403, 151, 77, 64);
 
+        player2TurnLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.turn.png"))); // NOI18N
+        gamePanel.add(player2TurnLabel);
+        player2TurnLabel.setBounds(487, 56, 81, 176);
+        player2TurnLabel.setVisible(false);
+
         piece2Label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Omok.stone.1.black.0.png"))); // NOI18N
         gamePanel.add(piece2Label);
         piece2Label.setBounds(494, 190, 23, 23);
@@ -100,6 +148,11 @@ public class Game extends javax.swing.JFrame {
         info2Label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.info0.png"))); // NOI18N
         gamePanel.add(info2Label);
         info2Label.setBounds(490, 151, 77, 64);
+
+        boardPanel.setOpaque(false);
+        boardPanel.setLayout(new java.awt.GridLayout(15, 15));
+        gamePanel.add(boardPanel);
+        boardPanel.setBounds(12, 20, 374, 370);
 
         actionsPanel.setOpaque(false);
         actionsPanel.setLayout(new javax.swing.BoxLayout(actionsPanel, javax.swing.BoxLayout.LINE_AXIS));
@@ -113,6 +166,11 @@ public class Game extends javax.swing.JFrame {
         btAbsten.setPreferredSize(new java.awt.Dimension(47, 18));
         btAbsten.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btAbsten.mouseOver.0.png"))); // NOI18N
         btAbsten.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btAbsten.pressed.0.png"))); // NOI18N
+        btAbsten.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAbstenActionPerformed(evt);
+            }
+        });
         actionsPanel.add(btAbsten);
 
         btDraw.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btDraw.normal.0.png"))); // NOI18N
@@ -124,6 +182,11 @@ public class Game extends javax.swing.JFrame {
         btDraw.setPreferredSize(new java.awt.Dimension(47, 18));
         btDraw.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btDraw.mouseOver.0.png"))); // NOI18N
         btDraw.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btDraw.pressed.0.png"))); // NOI18N
+        btDraw.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btDrawActionPerformed(evt);
+            }
+        });
         actionsPanel.add(btDraw);
 
         btRefund.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btRefund.normal.0.png"))); // NOI18N
@@ -135,6 +198,11 @@ public class Game extends javax.swing.JFrame {
         btRefund.setPreferredSize(new java.awt.Dimension(47, 18));
         btRefund.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btRefund.mouseOver.0.png"))); // NOI18N
         btRefund.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btRefund.pressed.0.png"))); // NOI18N
+        btRefund.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btRefundActionPerformed(evt);
+            }
+        });
         actionsPanel.add(btRefund);
 
         gamePanel.add(actionsPanel);
@@ -158,6 +226,141 @@ public class Game extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btExitActionPerformed
+        int selection = JOptionPane.showConfirmDialog(this, "Are you sure you want to leave?", "Info", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if(selection == 0) {
+            dispose();
+        }
+    }//GEN-LAST:event_btExitActionPerformed
+
+    private void btReadyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReadyActionPerformed
+        
+    }//GEN-LAST:event_btReadyActionPerformed
+
+    private void btAbstenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAbstenActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btAbstenActionPerformed
+
+    private void btDrawActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDrawActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btDrawActionPerformed
+
+    private void btRefundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRefundActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btRefundActionPerformed
+
+    private void btStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btStartActionPerformed
+        Piece piece;
+        boardPanel.removeAll();
+        for(int i = 0; i < 15; i++) {
+            for(int j = 0; j < 15; j++) {
+                piece = new Piece(this, j, i);
+                board[i][j] = piece;
+                boardPanel.add(piece);
+            }
+        }
+        btStart.setVisible(false);
+        //btReady.setVisible(true);
+        finished = false;
+        nextMove();
+        boardPanel.revalidate();
+    }//GEN-LAST:event_btStartActionPerformed
+
+    private void nextMove() {
+        player = (player+1)%2;
+        turn++;
+        player1TurnLabel.setVisible((player == 0));
+        player2TurnLabel.setVisible((player == 1));
+        turnLabel.setText("[" + (player == 0? "Player 1" : "Player 2") + "] turn");
+    }
+    
+    public void searchCombo(int x, int y) {
+        int rightX = x+4, leftX = x-4, topY = y-4, bottomY = y+4, count;
+        //create bounding box
+        if(leftX < 0) {
+            leftX = 0;
+        }
+        if(rightX > 14) {
+            rightX = 14;
+        }
+        if(topY < 0) {
+            topY = 0;
+        }
+        if(bottomY > 14) {
+            bottomY = 14;
+        }
+        count = 0;
+        for(int i = leftX; i <= rightX; i++) { //check horizontal
+            if(board[y][i].getOwner() == player) {
+                count++;
+            } else {
+                count = 0;
+            }
+            if(count == 5) {
+                break;
+            }
+        }
+        if(count != 5) { //check vertical
+            count = 0;
+            for(int i = topY; i <= bottomY; i++) {
+                if(board[i][x].getOwner() == player) {
+                    count++;
+                } else {
+                    count = 0;
+                }
+                if(count == 5) {
+                    break;
+                }
+            }
+        }
+        if(count != 5) { //check main diagonal
+            count = 0;
+            for(int i = topY, j = leftX; i <= bottomY && j <= rightX; i++, j++) {
+                if(board[i][j].getOwner() == player) {
+                    count++;
+                } else {
+                    count = 0;
+                }
+                if(count == 5) {
+                    break;
+                }
+            }
+        }
+        if(count != 5) { //check secondary diagonal
+            count = 0;
+            for(int i = topY, j = rightX; i <= bottomY && j >= leftX; i++, j--) {
+                if(board[i][j].getOwner() == player) {
+                    count++;
+                } else {
+                    count = 0;
+                }
+                if(count == 5) {
+                    break;
+                }
+            }
+        }
+        if(count != 5) {
+            nextMove();
+        } else {
+            finishGame();
+        }
+    }
+    
+    private void finishGame() {
+        turnLabel.setText("[" + (player == 0? "Player 1" : "Player 2") + "] has won!");
+        finished = true;
+        btStart.setVisible(true);
+        revalidate();
+    }
+    
+    public int getPlayer() {
+        return player;
+    }
+    
+    public boolean gameFinished() {
+        return finished;
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -196,17 +399,20 @@ public class Game extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel actionsPanel;
     private javax.swing.JLabel backgroundLabel;
+    private javax.swing.JPanel boardPanel;
     private javax.swing.JButton btAbsten;
     private javax.swing.JButton btDraw;
     private javax.swing.JButton btExit;
     private javax.swing.JButton btReady;
     private javax.swing.JButton btRefund;
-    private javax.swing.JLabel currentPlayerLabel;
+    private javax.swing.JButton btStart;
     private javax.swing.JPanel gamePanel;
     private javax.swing.JLabel info1Label;
     private javax.swing.JLabel info2Label;
     private javax.swing.JLabel piece1Label;
     private javax.swing.JLabel piece2Label;
+    private javax.swing.JLabel player1TurnLabel;
+    private javax.swing.JLabel player2TurnLabel;
     private javax.swing.JLabel timerLabel;
     private javax.swing.JLabel titleLabel;
     private javax.swing.JLabel turnLabel;
