@@ -5,8 +5,10 @@
  */
 package view;
 
+import data.Player;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 
 /**
  *
@@ -14,17 +16,24 @@ import javax.swing.JOptionPane;
  */
 public class Game extends JFrame {
     
-    private int player;
+    private Player player1;
+    private Player player2;
+    
     private int turn;
     private boolean finished;
     private Piece[][] board;
     
     /**
      * Creates new form Game
+     * @param player1
+     * @param player2
      */
-    public Game() {
-        player = 1;
-        turn = -1;
+    public Game(Player player1, Player player2) {
+        this.player1 = player1;
+        this.player2 = player2;
+        System.out.println(player1.getName());
+        System.out.println(player2.getName());
+        turn = 1;
         finished = false;
         board = new Piece[15][15];
         initComponents();
@@ -47,10 +56,12 @@ public class Game extends JFrame {
         turnLabel = new javax.swing.JLabel();
         timerLabel = new javax.swing.JLabel();
         player1TurnLabel = new javax.swing.JLabel();
-        piece1Label = new javax.swing.JLabel();
+        player1PieceLabel = new javax.swing.JLabel();
+        player1NameLabel = new javax.swing.JLabel();
         info1Label = new javax.swing.JLabel();
         player2TurnLabel = new javax.swing.JLabel();
-        piece2Label = new javax.swing.JLabel();
+        player2PieceLabel = new javax.swing.JLabel();
+        player2NameLabel = new javax.swing.JLabel();
         info2Label = new javax.swing.JLabel();
         boardPanel = new javax.swing.JPanel();
         actionsPanel = new javax.swing.JPanel();
@@ -128,9 +139,14 @@ public class Game extends JFrame {
         player1TurnLabel.setBounds(401, 56, 81, 176);
         player1TurnLabel.setVisible(false);
 
-        piece1Label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Omok.stone.0.white.0.png"))); // NOI18N
-        gamePanel.add(piece1Label);
-        piece1Label.setBounds(407, 190, 23, 23);
+        player1PieceLabel.setIcon(player1.getIcon());
+        gamePanel.add(player1PieceLabel);
+        player1PieceLabel.setBounds(407, 190, 23, 23);
+
+        player1NameLabel.setText(player1.getName());
+        player1NameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        gamePanel.add(player1NameLabel);
+        player1NameLabel.setBounds(407, 215, 70, 14);
 
         info1Label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.info0.png"))); // NOI18N
         gamePanel.add(info1Label);
@@ -141,9 +157,14 @@ public class Game extends JFrame {
         player2TurnLabel.setBounds(487, 56, 81, 176);
         player2TurnLabel.setVisible(false);
 
-        piece2Label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Omok.stone.1.black.0.png"))); // NOI18N
-        gamePanel.add(piece2Label);
-        piece2Label.setBounds(494, 190, 23, 23);
+        player2PieceLabel.setIcon(player2.getIcon());
+        gamePanel.add(player2PieceLabel);
+        player2PieceLabel.setBounds(494, 190, 23, 23);
+
+        player2NameLabel.setText(player2.getName());
+        player2NameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        gamePanel.add(player2NameLabel);
+        player2NameLabel.setBounds(493, 215, 70, 14);
 
         info2Label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.info0.png"))); // NOI18N
         gamePanel.add(info2Label);
@@ -262,138 +283,99 @@ public class Game extends JFrame {
         btStart.setVisible(false);
         //btReady.setVisible(true);
         finished = false;
+        turn = 1;
         nextMove();
         boardPanel.revalidate();
     }//GEN-LAST:event_btStartActionPerformed
 
     private void nextMove() {
-        player = (player+1)%2;
-        turn++;
-        player1TurnLabel.setVisible((player == 0));
-        player2TurnLabel.setVisible((player == 1));
-        turnLabel.setText("[" + (player == 0? "Player 1" : "Player 2") + "] turn");
+        turn = (turn+1)%2;
+        player1TurnLabel.setVisible((turn == 0));
+        player2TurnLabel.setVisible((turn == 1));
+        turnLabel.setText("[" + getCurrentPlayer().getName() + "] turn");
     }
     
     public void searchCombo(int x, int y) {
-        int rightX = x+4, leftX = x-4, topY = y-4, bottomY = y+4, count;
+        int rightX = x+4, leftX = x-4, topY = y-4, bottomY = y+4;
         //create bounding box
         if(leftX < 0) {
             leftX = 0;
-        }
+            }
         if(rightX > 14) {
             rightX = 14;
-        }
+            }
         if(topY < 0) {
             topY = 0;
-        }
+            }
         if(bottomY > 14) {
             bottomY = 14;
         }
-        count = 0;
-        for(int i = leftX; i <= rightX; i++) { //check horizontal
-            if(board[y][i].getOwner() == player) {
+        for(int i = leftX, count = 0; i <= rightX; i++) { //check horizontal
+            if(board[y][i].getOwner() == getCurrentPlayer()) {
                 count++;
             } else {
                 count = 0;
             }
+            System.out.printf("[H] X: %d Y: %d Count: %d ", i, y, count);
             if(count == 5) {
-                break;
+                finishGame();
             }
         }
-        if(count != 5) { //check vertical
-            count = 0;
-            for(int i = topY; i <= bottomY; i++) {
-                if(board[i][x].getOwner() == player) {
-                    count++;
-                } else {
-                    count = 0;
-                }
-                if(count == 5) {
-                    break;
-                }
+        System.out.println("");
+        for(int i = topY, count = 0; i <= bottomY; i++) { //check vertical
+            if(board[i][x].getOwner() == getCurrentPlayer()) {
+                count++;
+            } else {
+                count = 0;
+            }
+            System.out.printf("[V] X: %d Y: %d Count: %d", x, i, count);
+            if(count == 5) {
+                finishGame();
             }
         }
-        if(count != 5) { //check main diagonal
-            count = 0;
-            for(int i = topY, j = leftX; i <= bottomY && j <= rightX; i++, j++) {
-                if(board[i][j].getOwner() == player) {
-                    count++;
-                } else {
-                    count = 0;
-                }
-                if(count == 5) {
-                    break;
-                }
+        System.out.println("");
+        for(int i = topY, j = leftX, count = 0; i <= bottomY && j <= rightX; i++, j++) { //check main diagonal
+            if(board[i][j].getOwner() == getCurrentPlayer()) {
+                count++;
+            } else {
+                count = 0;
+            }
+            System.out.printf("[MD] X: %d Y: %d Count: %d", j, i, count);
+            if(count == 5) {
+                finishGame();
             }
         }
-        if(count != 5) { //check secondary diagonal
-            count = 0;
-            for(int i = topY, j = rightX; i <= bottomY && j >= leftX; i++, j--) {
-                if(board[i][j].getOwner() == player) {
-                    count++;
-                } else {
-                    count = 0;
-                }
-                if(count == 5) {
-                    break;
-                }
+        System.out.println("");
+        for(int i = topY, j = rightX, count = 0; i <= bottomY && j >= leftX; i++, j--) { //check secondary diagonal
+            if(board[i][j].getOwner() == getCurrentPlayer()) {
+                count++;
+            } else {
+                count = 0;
+            }
+            System.out.printf("[SD] X: %d Y: %d Count: %d", j, i, count);
+            if(count == 5) {
+                finishGame();
             }
         }
-        if(count != 5) {
+        System.out.println("\n");
+        if(!finished){
             nextMove();
-        } else {
-            finishGame();
         }
     }
     
     private void finishGame() {
-        turnLabel.setText("[" + (player == 0? "Player 1" : "Player 2") + "] has won!");
+        turnLabel.setText("[" + getCurrentPlayer().getName() + "] has won!");
         finished = true;
         btStart.setVisible(true);
         revalidate();
     }
     
-    public int getPlayer() {
-        return player;
+    public Player getCurrentPlayer() {
+        return (turn == 0? player1 : player2);
     }
     
     public boolean gameFinished() {
         return finished;
-    }
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Game().setVisible(true);
-            }
-        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -409,9 +391,11 @@ public class Game extends JFrame {
     private javax.swing.JPanel gamePanel;
     private javax.swing.JLabel info1Label;
     private javax.swing.JLabel info2Label;
-    private javax.swing.JLabel piece1Label;
-    private javax.swing.JLabel piece2Label;
+    private javax.swing.JLabel player1NameLabel;
+    private javax.swing.JLabel player1PieceLabel;
     private javax.swing.JLabel player1TurnLabel;
+    private javax.swing.JLabel player2NameLabel;
+    private javax.swing.JLabel player2PieceLabel;
     private javax.swing.JLabel player2TurnLabel;
     private javax.swing.JLabel timerLabel;
     private javax.swing.JLabel titleLabel;

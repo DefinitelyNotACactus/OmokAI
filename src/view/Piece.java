@@ -5,9 +5,9 @@
  */
 package view;
 
+import data.Player;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 /**
@@ -15,27 +15,21 @@ import javax.swing.JButton;
  * @author david
  */
 public class Piece extends JButton {
-    //TODO add more options
-    private static final ImageIcon ICON_1 = new ImageIcon(Piece.class.getResource("/resources/Omok.stone.0.white.1.png"));
-    private static final ImageIcon ICON_2 = new ImageIcon(Piece.class.getResource("/resources/Omok.stone.1.black.1.png")); 
-    
+    //TODO add more options    
     private static final Dimension DIMENSION = new Dimension(23,23);
     
-    private boolean empty;
     private Game game;
     
     private int x;
     private int y;
-    private int owner;
+    private Player owner;
     
     public Piece(Game game, int x, int y) {
         this.game = game;
         this.x = x;
         this.y = y;
-        this.owner = -1;
-        
-        empty = false;
-        
+        this.owner = null;
+                
         setPreferredSize(DIMENSION);
         setMaximumSize(DIMENSION);
         setMinimumSize(DIMENSION);
@@ -46,24 +40,23 @@ public class Piece extends JButton {
     }
     
     private void pieceActionPerformed(ActionEvent evt) {
-        if(!empty && !game.gameFinished()) {
+        if(isEmpty() && !game.gameFinished()) {
             setOwner();
-            setIcon(owner == 0 ? ICON_1 : ICON_2);
-            empty = true;
+            setIcon(owner.getIcon());
             game.searchCombo(x, y);
             repaint();
         }
     }
     
     public boolean isEmpty() {
-        return empty;
+        return (owner == null);
     }
     
     private void setOwner() {
-        owner = game.getPlayer();
+        owner = game.getCurrentPlayer();
     }
     
-    public int getOwner() {
+    public Player getOwner() {
         return owner;
     }
 }
