@@ -31,8 +31,6 @@ public class Game extends JFrame {
     public Game(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
-        System.out.println(player1.getName());
-        System.out.println(player2.getName());
         turn = 1;
         finished = false;
         board = new Piece[15][15];
@@ -295,72 +293,46 @@ public class Game extends JFrame {
         turnLabel.setText("[" + getCurrentPlayer().getName() + "] turn");
     }
     
-    public void searchCombo(int x, int y) {
-        int rightX = x+4, leftX = x-4, topY = y-4, bottomY = y+4;
-        //create bounding box
-        if(leftX < 0) {
-            leftX = 0;
-            }
-        if(rightX > 14) {
-            rightX = 14;
-            }
-        if(topY < 0) {
-            topY = 0;
-            }
-        if(bottomY > 14) {
-            bottomY = 14;
-        }
-        for(int i = leftX, count = 0; i <= rightX; i++) { //check horizontal
-            if(board[y][i].getOwner() == getCurrentPlayer()) {
-                count++;
-            } else {
-                count = 0;
-            }
-            System.out.printf("[H] X: %d Y: %d Count: %d ", i, y, count);
-            if(count == 5) {
-                finishGame();
-            }
-        }
-        System.out.println("");
-        for(int i = topY, count = 0; i <= bottomY; i++) { //check vertical
-            if(board[i][x].getOwner() == getCurrentPlayer()) {
-                count++;
-            } else {
-                count = 0;
-            }
-            System.out.printf("[V] X: %d Y: %d Count: %d", x, i, count);
-            if(count == 5) {
-                finishGame();
-            }
-        }
-        System.out.println("");
-        for(int i = topY, j = leftX, count = 0; i <= bottomY && j <= rightX; i++, j++) { //check main diagonal
-            if(board[i][j].getOwner() == getCurrentPlayer()) {
-                count++;
-            } else {
-                count = 0;
-            }
-            System.out.printf("[MD] X: %d Y: %d Count: %d", j, i, count);
-            if(count == 5) {
-                finishGame();
-            }
-        }
-        System.out.println("");
-        for(int i = topY, j = rightX, count = 0; i <= bottomY && j >= leftX; i++, j--) { //check secondary diagonal
-            if(board[i][j].getOwner() == getCurrentPlayer()) {
-                count++;
-            } else {
-                count = 0;
-            }
-            System.out.printf("[SD] X: %d Y: %d Count: %d", j, i, count);
-            if(count == 5) {
-                finishGame();
-            }
-        }
-        System.out.println("\n");
-        if(!finished){
+    public void processTurn(int x, int y) {
+        if(searchCombo(x, y)) {
+            finishGame();
+        } else {
             nextMove();
         }
+    }
+    
+    private boolean searchCombo(int x, int y) {
+        if(searchComboDirection(x, y, 1, 0)) {
+            return true;
+        }
+        if(searchComboDirection(x, y, 0, 1)) {
+            return true;
+        }
+        if(searchComboDirection(x, y, 1, 1)) {
+            return true;
+        }
+        if(searchComboDirection(x, y, 1, -1)) {
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean searchComboDirection(int x, int y, int dirX, int dirY) {
+        int count = 1;
+        for(int i = x + dirX, j = y + dirY; i >= 0 && i < 15 && j >= 0 && j < 15 && board[j][i].getOwner() == getCurrentPlayer() && count < 5; ) {
+            count++;
+            i += dirX;
+            j += dirY;
+        }
+        if(count == 5) {
+            return true;
+        }
+        for(int i = x - dirX, j = y - dirY; i >= 0 && i < 15 && j >= 0 && j < 15 && board[j][i].getOwner() == getCurrentPlayer() && count < 5; ) {
+            count++;
+            i -= dirX;
+            j -= dirY;
+        }
+        return (count == 5);
     }
     
     private void finishGame() {

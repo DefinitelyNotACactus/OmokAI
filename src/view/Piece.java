@@ -43,7 +43,7 @@ public class Piece extends JButton {
         if(isEmpty() && !game.gameFinished()) {
             setOwner();
             setIcon(owner.getIcon());
-            game.searchCombo(x, y);
+            game.processTurn(x, y);
             repaint();
         }
     }
