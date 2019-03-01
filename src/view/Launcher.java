@@ -64,29 +64,27 @@ public class Launcher extends JFrame {
 
         playerOptionPanel.setLayout(new java.awt.GridLayout(4, 2, 5, 0));
 
-        player1Label.setBackground(new java.awt.Color(255, 255, 255));
+        player1Label.setBackground(new java.awt.Color(0, 0, 0));
+        player1Label.setForeground(new java.awt.Color(255, 255, 255));
         player1Label.setText("Player 1");
         player1Label.setOpaque(true);
         playerOptionPanel.add(player1Label);
         player1Label.setHorizontalAlignment(SwingConstants.CENTER);
 
-        player2Label.setBackground(new java.awt.Color(0, 0, 0));
-        player2Label.setForeground(new java.awt.Color(255, 255, 255));
+        player2Label.setBackground(new java.awt.Color(255, 255, 255));
         player2Label.setText("Player 2");
         player2Label.setOpaque(true);
         playerOptionPanel.add(player2Label);
         player2Label.setHorizontalAlignment(SwingConstants.CENTER);
 
+        player1TextField.setBackground(new java.awt.Color(0, 0, 0));
         player1TextField.setColumns(16);
+        player1TextField.setForeground(new java.awt.Color(255, 255, 255));
         player1TextField.setText("Player 1");
-        player1TextField.setOpaque(true);
         playerOptionPanel.add(player1TextField);
 
-        player2TextField.setBackground(new java.awt.Color(0, 0, 0));
         player2TextField.setColumns(16);
-        player2TextField.setForeground(new java.awt.Color(255, 255, 255));
         player2TextField.setText("Player 2");
-        player2TextField.setOpaque(true);
         player2TextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 player2TextFieldActionPerformed(evt);
@@ -94,22 +92,19 @@ public class Launcher extends JFrame {
         });
         playerOptionPanel.add(player2TextField);
 
-        player1ComboBox.setBackground(new java.awt.Color(255, 255, 255));
-        player1ComboBox.setOpaque(true);
+        player1ComboBox.setBackground(new java.awt.Color(0, 0, 0));
+        player1ComboBox.setForeground(new java.awt.Color(255, 255, 255));
         player1ComboBox.setSelectedIndex(0);
         player1ComboBox.setRenderer(renderer);
         playerOptionPanel.add(player1ComboBox);
 
-        player2ComboBox.setBackground(new java.awt.Color(0, 0, 0));
-        player2ComboBox.setForeground(new java.awt.Color(255, 255, 255));
-        player2ComboBox.setOpaque(true);
         player2ComboBox.setSelectedIndex(1);
         player2ComboBox.setRenderer(renderer);
         playerOptionPanel.add(player2ComboBox);
 
-        btReady1.setBackground(new java.awt.Color(255, 255, 255));
+        btReady1.setBackground(new java.awt.Color(0, 0, 0));
+        btReady1.setForeground(new java.awt.Color(255, 255, 255));
         btReady1.setText("Ready");
-        btReady1.setOpaque(true);
         btReady1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btReady1ActionPerformed(evt);
@@ -117,11 +112,8 @@ public class Launcher extends JFrame {
         });
         playerOptionPanel.add(btReady1);
 
-        btReady2.setBackground(new java.awt.Color(0, 0, 0));
-        btReady2.setForeground(new java.awt.Color(255, 255, 255));
+        btReady2.setBackground(new java.awt.Color(255, 255, 255));
         btReady2.setText("Ready");
-        btReady2.setLocation(new java.awt.Point(400, 400));
-        btReady2.setOpaque(true);
         btReady2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btReady2ActionPerformed(evt);
