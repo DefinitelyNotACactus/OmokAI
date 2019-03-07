@@ -6,9 +6,12 @@
 package view;
 
 import data.Player;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
 /**
  *
@@ -18,6 +21,9 @@ public class Game extends JFrame {
     
     private Player player1;
     private Player player2;
+    
+    private Timer turnTimer;
+    private int counter;
     
     private int turn;
     private boolean finished;
@@ -31,10 +37,24 @@ public class Game extends JFrame {
     public Game(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
+        
         turn = 1;
+        counter = 0;
         finished = false;
         board = new Piece[15][15];
+        
         initComponents();
+        
+        turnTimer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if(!finished) {
+                    counter++;
+                    timerLabel.setText(String.format("%02d:%02d", counter/60, counter%60));
+                }
+            }
+        });
+
     }
 
     /**
@@ -47,6 +67,7 @@ public class Game extends JFrame {
     private void initComponents() {
 
         gamePanel = new javax.swing.JPanel();
+        censorLabel = new javax.swing.JLabel();
         titleLabel = new javax.swing.JLabel();
         btReady = new javax.swing.JButton();
         btStart = new javax.swing.JButton();
@@ -56,10 +77,16 @@ public class Game extends JFrame {
         player1TurnLabel = new javax.swing.JLabel();
         player1PieceLabel = new javax.swing.JLabel();
         player1NameLabel = new javax.swing.JLabel();
+        player1WinsLabel = new javax.swing.JLabel();
+        player1TiesLabel = new javax.swing.JLabel();
+        player1LossesLabel = new javax.swing.JLabel();
         info1Label = new javax.swing.JLabel();
         player2TurnLabel = new javax.swing.JLabel();
         player2PieceLabel = new javax.swing.JLabel();
         player2NameLabel = new javax.swing.JLabel();
+        player2WinsLabel = new javax.swing.JLabel();
+        player2TiesLabel = new javax.swing.JLabel();
+        player2LossesLabel = new javax.swing.JLabel();
         info2Label = new javax.swing.JLabel();
         boardPanel = new javax.swing.JPanel();
         actionsPanel = new javax.swing.JPanel();
@@ -77,9 +104,12 @@ public class Game extends JFrame {
         gamePanel.setSize(new java.awt.Dimension(734, 429));
         gamePanel.setLayout(null);
 
-        titleLabel.setText("(G)omok(u)");
+        censorLabel.setBackground(new java.awt.Color(255, 255, 255));
+        censorLabel.setOpaque(true);
+        gamePanel.add(censorLabel);
+        censorLabel.setBounds(410, 20, 80, 20);
         gamePanel.add(titleLabel);
-        titleLabel.setBounds(510, 20, 210, 16);
+        titleLabel.setBounds(510, 20, 210, 0);
 
         btReady.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btReady.normal.0.png"))); // NOI18N
         btReady.setBorderPainted(false);
@@ -141,10 +171,27 @@ public class Game extends JFrame {
         gamePanel.add(player1PieceLabel);
         player1PieceLabel.setBounds(407, 190, 23, 23);
 
+        player1NameLabel.setBackground(new java.awt.Color(255, 255, 255));
         player1NameLabel.setText(player1.getName());
+        player1NameLabel.setOpaque(true);
         player1NameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gamePanel.add(player1NameLabel);
-        player1NameLabel.setBounds(407, 215, 70, 14);
+        player1NameLabel.setBounds(407, 154, 70, 14);
+
+        player1WinsLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+        player1WinsLabel.setText("" + player1.getWins());
+        gamePanel.add(player1WinsLabel);
+        player1WinsLabel.setBounds(445, 172, 20, 13);
+
+        player1TiesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+        player1TiesLabel.setText("" + player1.getTies());
+        gamePanel.add(player1TiesLabel);
+        player1TiesLabel.setBounds(445, 186, 20, 13);
+
+        player1LossesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+        player1LossesLabel.setText("" + player1.getLosses());
+        gamePanel.add(player1LossesLabel);
+        player1LossesLabel.setBounds(445, 200, 20, 13);
 
         info1Label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.info0.png"))); // NOI18N
         gamePanel.add(info1Label);
@@ -159,10 +206,27 @@ public class Game extends JFrame {
         gamePanel.add(player2PieceLabel);
         player2PieceLabel.setBounds(494, 190, 23, 23);
 
+        player2NameLabel.setBackground(new java.awt.Color(255, 255, 255));
         player2NameLabel.setText(player2.getName());
+        player2NameLabel.setOpaque(true);
         player2NameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gamePanel.add(player2NameLabel);
-        player2NameLabel.setBounds(493, 215, 70, 14);
+        player2NameLabel.setBounds(493, 154, 70, 14);
+
+        player2WinsLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+        player2WinsLabel.setText("" + player2.getWins());
+        gamePanel.add(player2WinsLabel);
+        player2WinsLabel.setBounds(531, 172, 20, 13);
+
+        player2TiesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+        player2TiesLabel.setText("" + player2.getTies());
+        gamePanel.add(player2TiesLabel);
+        player2TiesLabel.setBounds(531, 186, 20, 13);
+
+        player2LossesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+        player2LossesLabel.setText("" + player2.getLosses());
+        gamePanel.add(player2LossesLabel);
+        player2LossesLabel.setBounds(531, 200, 20, 13);
 
         info2Label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.info0.png"))); // NOI18N
         gamePanel.add(info2Label);
@@ -283,19 +347,24 @@ public class Game extends JFrame {
         finished = false;
         turn = 1;
         nextMove();
+        turnTimer.start();
         boardPanel.revalidate();
     }//GEN-LAST:event_btStartActionPerformed
 
     private void nextMove() {
-        turn = (turn+1)%2;
-        player1TurnLabel.setVisible((turn == 0));
-        player2TurnLabel.setVisible((turn == 1));
+        turn++;
+        if(turn > 225) {
+            finishGame(true);
+        }
+        player1TurnLabel.setVisible(((turn%2) == 0));
+        player2TurnLabel.setVisible(((turn%2) == 1));
         turnLabel.setText("[" + getCurrentPlayer().getName() + "] turn");
+        resetCounter();
     }
     
     public void processTurn(int x, int y) {
         if(searchCombo(x, y)) {
-            finishGame();
+            finishGame(false);
         } else {
             nextMove();
         }
@@ -311,10 +380,7 @@ public class Game extends JFrame {
         if(searchComboDirection(x, y, 1, 1)) {
             return true;
         }
-        if(searchComboDirection(x, y, 1, -1)) {
-            return true;
-        }
-        return false;
+        return searchComboDirection(x, y, 1, -1);
     }
     
     private boolean searchComboDirection(int x, int y, int dirX, int dirY) {
@@ -335,21 +401,57 @@ public class Game extends JFrame {
         return (count == 5);
     }
     
-    private void finishGame() {
+    private void finishGame(boolean tie) {
+        if(!tie) {
         turnLabel.setText("[" + getCurrentPlayer().getName() + "] has won!");
+        } else {
+            turnLabel.setText("Somehow this ended in a tie!");
+        }
+        updateStats(tie);
+        turnTimer.stop();
+        resetCounter();
         finished = true;
         btStart.setVisible(true);
         revalidate();
     }
     
     public Player getCurrentPlayer() {
-        return (turn == 0? player1 : player2);
+        return ((turn%2 == 0) ? player1 : player2);
+    }
+    
+    public Player getOtherPlayer() {
+        return ((turn%2 == 0) ? player2 : player1);
     }
     
     public boolean gameFinished() {
         return finished;
     }
-
+    
+    private void resetCounter() {
+        counter = 0;
+        timerLabel.setText(String.format("%02d:%02d", counter/60, counter%60));
+    }
+    
+    public int getCounter() {
+        return counter;
+    }
+    
+    private void updateStats(boolean tie) {
+        if(!tie) {
+            getCurrentPlayer().addWin();
+            getOtherPlayer().addLoss();
+            player1WinsLabel.setText("" + player1.getWins());
+            player1LossesLabel.setText("" + player1.getLosses());
+            player2WinsLabel.setText("" + player2.getWins());
+            player2LossesLabel.setText("" + player2.getLosses());
+        } else {
+            getCurrentPlayer().addTie();
+            getOtherPlayer().addTie();
+            player1TiesLabel.setText("" + player1.getTies());
+            player2TiesLabel.setText("" + player2.getTies());
+        }
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel actionsPanel;
     private javax.swing.JLabel backgroundLabel;
@@ -360,15 +462,22 @@ public class Game extends JFrame {
     private javax.swing.JButton btReady;
     private javax.swing.JButton btRefund;
     private javax.swing.JButton btStart;
+    private javax.swing.JLabel censorLabel;
     private javax.swing.JPanel gamePanel;
     private javax.swing.JLabel info1Label;
     private javax.swing.JLabel info2Label;
+    private javax.swing.JLabel player1LossesLabel;
     private javax.swing.JLabel player1NameLabel;
     private javax.swing.JLabel player1PieceLabel;
+    private javax.swing.JLabel player1TiesLabel;
     private javax.swing.JLabel player1TurnLabel;
+    private javax.swing.JLabel player1WinsLabel;
+    private javax.swing.JLabel player2LossesLabel;
     private javax.swing.JLabel player2NameLabel;
     private javax.swing.JLabel player2PieceLabel;
+    private javax.swing.JLabel player2TiesLabel;
     private javax.swing.JLabel player2TurnLabel;
+    private javax.swing.JLabel player2WinsLabel;
     private javax.swing.JLabel timerLabel;
     private javax.swing.JLabel titleLabel;
     private javax.swing.JLabel turnLabel;

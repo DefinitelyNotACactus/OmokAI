@@ -156,7 +156,7 @@ public class Launcher extends JFrame {
             btReady1.setEnabled(false);
             player1ComboBox.setEnabled(false);
             player1TextField.setEnabled(false);
-            player1 = new Player(player1TextField.getText(), ComboBoxRenderer.icons[(Integer) player1ComboBox.getSelectedItem()]);
+            player1 = new Player(player1TextField.getText(), (Integer) player1ComboBox.getSelectedItem());
             if(!btReady2.isEnabled()) {
                 new Game(player1, player2).setVisible(true);
                 dispose();
@@ -171,7 +171,7 @@ public class Launcher extends JFrame {
             btReady2.setEnabled(false);
             player2ComboBox.setEnabled(false);
             player2TextField.setEnabled(false);
-            player2 = new Player(player2TextField.getText(), ComboBoxRenderer.icons[(Integer) player2ComboBox.getSelectedItem()]);            
+            player2 = new Player(player2TextField.getText(), (Integer) player2ComboBox.getSelectedItem());            
             if(!btReady1.isEnabled()) {
                 new Game(player1, player2).setVisible(true);
                 dispose();
