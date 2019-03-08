@@ -25,8 +25,12 @@ public class Game extends JFrame {
     private Timer turnTimer;
     private int counter;
     
+    private Thread animationThread;
+    private Runnable run;
+    private volatile int aState;
+    
     private int turn;
-    private boolean finished;
+    private volatile boolean finished;
     private Piece[][] board;
     
     /**
@@ -55,6 +59,9 @@ public class Game extends JFrame {
             }
         });
 
+        aState = 0;
+        run = this::animatePieces;
+        animationThread = new Thread(run);
     }
 
     /**
@@ -348,6 +355,9 @@ public class Game extends JFrame {
         turn = 1;
         nextMove();
         turnTimer.start();
+        if(!animationThread.isAlive()) {
+            animationThread.start();
+        }
         boardPanel.revalidate();
     }//GEN-LAST:event_btStartActionPerformed
 
@@ -412,6 +422,7 @@ public class Game extends JFrame {
         resetCounter();
         finished = true;
         btStart.setVisible(true);
+        setPiecesState(0);
         revalidate();
     }
     
@@ -436,6 +447,10 @@ public class Game extends JFrame {
         return counter;
     }
     
+    public int getAnimationState() {
+        return aState;
+    }
+    
     private void updateStats(boolean tie) {
         if(!tie) {
             getCurrentPlayer().addWin();
@@ -449,6 +464,31 @@ public class Game extends JFrame {
             getOtherPlayer().addTie();
             player1TiesLabel.setText("" + player1.getTies());
             player2TiesLabel.setText("" + player2.getTies());
+        }
+    }
+    
+    private void animatePieces() {
+        while(true) {
+            if(!finished) {
+                aState = (aState + 1)%3;
+                setPiecesState(aState);
+                try {
+                    Thread.sleep(500);
+                } catch(InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+    
+    private void setPiecesState(int state) {
+        for(Piece pieces[] : board) {
+            for(Piece piece : pieces) {
+                if(piece.getOwner() != null) {
+                    piece.setIcon(piece.getOwner().getIconState(state));
+                    piece.repaint();
+                }
+            }
         }
     }
     

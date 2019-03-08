@@ -29,7 +29,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="playerOptionPanel" max="32767" attributes="0"/>
-                  <Component id="titleLabel" pref="388" max="32767" attributes="0"/>
+                  <Component id="titleLabel" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -111,9 +111,6 @@
             <Property name="columns" type="int" value="16"/>
             <Property name="text" type="java.lang.String" value="Player 2"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="player2TextFieldActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JComboBox" name="player1ComboBox">
           <Properties>

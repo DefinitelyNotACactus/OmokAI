@@ -15,7 +15,6 @@ import javax.swing.JButton;
  * @author david
  */
 public class Piece extends JButton {
-    //TODO add more options    
     private static final Dimension DIMENSION = new Dimension(23,23);
     
     private Game game;
@@ -29,7 +28,11 @@ public class Piece extends JButton {
         this.x = x;
         this.y = y;
         this.owner = null;
-                
+        
+        initComponents();
+    }
+    
+    private void initComponents() {
         setPreferredSize(DIMENSION);
         setMaximumSize(DIMENSION);
         setMinimumSize(DIMENSION);
@@ -42,7 +45,7 @@ public class Piece extends JButton {
     private void pieceActionPerformed(ActionEvent evt) {
         if(isEmpty() && !game.gameFinished()) {
             setOwner();
-            setIcon(owner.getIcon());
+            setIcon(owner.getIconState(game.getAnimationState()));
             game.processTurn(x, y);
             repaint();
         }

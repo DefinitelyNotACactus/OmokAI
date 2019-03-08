@@ -42,6 +42,10 @@ public class Player implements Serializable { //we may want to serialize this la
         return icon;
     }
     
+    public ImageIcon getIconState(int state) {
+        return ComboBoxRenderer.icons[iconId][state];
+    }
+    
     public int getIconId() {
         return iconId;
     }

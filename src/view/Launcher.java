@@ -85,11 +85,6 @@ public class Launcher extends JFrame {
 
         player2TextField.setColumns(16);
         player2TextField.setText("Player 2");
-        player2TextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                player2TextFieldActionPerformed(evt);
-            }
-        });
         playerOptionPanel.add(player2TextField);
 
         player1ComboBox.setBackground(new java.awt.Color(0, 0, 0));
@@ -129,7 +124,7 @@ public class Launcher extends JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(playerOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE))
+                    .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -146,10 +141,6 @@ public class Launcher extends JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void player2TextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player2TextFieldActionPerformed
-
-    }//GEN-LAST:event_player2TextFieldActionPerformed
 
     private void btReady1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReady1ActionPerformed
         if(player2ComboBox.getSelectedItem() != player1ComboBox.getSelectedItem()) {
