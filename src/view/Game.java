@@ -283,6 +283,7 @@ public class Game extends JFrame {
         btRefund.setBorderPainted(false);
         btRefund.setContentAreaFilled(false);
         btRefund.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btRefund.disabled.0.png"))); // NOI18N
+        btRefund.setEnabled(false);
         btRefund.setMaximumSize(new java.awt.Dimension(47, 18));
         btRefund.setMinimumSize(new java.awt.Dimension(47, 18));
         btRefund.setPreferredSize(new java.awt.Dimension(47, 18));
@@ -319,7 +320,7 @@ public class Game extends JFrame {
     private void btExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btExitActionPerformed
         int selection = JOptionPane.showConfirmDialog(this, "Are you sure you want to leave?", "Info", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
         if(selection == 0) {
-            dispose();
+            System.exit(0);
         }
     }//GEN-LAST:event_btExitActionPerformed
 
@@ -486,7 +487,6 @@ public class Game extends JFrame {
             for(Piece piece : pieces) {
                 if(piece.getOwner() != null) {
                     piece.setIcon(piece.getOwner().getIconState(state));
-                    piece.repaint();
                 }
             }
         }

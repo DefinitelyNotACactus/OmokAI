@@ -28,8 +28,8 @@ public class Launcher extends JFrame {
     
     public Launcher() {
         renderer = new ComboBoxRenderer();
-        array = new Integer[7];
-        for(int i = 0; i < 7; i++) {
+        array = new Integer[8];
+        for(int i = 0; i < 8; i++) {
             array[i] = i;
         }
         initComponents();

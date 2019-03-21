@@ -45,7 +45,7 @@ public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
     }
     
     private void loadIcons() { //hardcoded
-        icons = new ImageIcon[7][3];
+        icons = new ImageIcon[8][3];
         icons[0][0] = new ImageIcon(getClass().getResource("/resources/Omok.stone.0.white.0.png"));
         icons[0][1] = new ImageIcon(getClass().getResource("/resources/Omok.stone.0.white.1.png"));
         icons[0][2] = new ImageIcon(getClass().getResource("/resources/Omok.stone.0.white.2.png"));
@@ -58,20 +58,24 @@ public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
         icons[2][1] = new ImageIcon(getClass().getResource("/resources/Omok.stone.2.black.1.png"));
         icons[2][2] = new ImageIcon(getClass().getResource("/resources/Omok.stone.2.black.2.png"));
         
-        icons[3][0] = new ImageIcon(getClass().getResource("/resources/Omok.stone.6.white.0.png"));
-        icons[3][1] = new ImageIcon(getClass().getResource("/resources/Omok.stone.6.white.1.png"));
-        icons[3][2] = new ImageIcon(getClass().getResource("/resources/Omok.stone.6.white.2.png"));
+        icons[3][0] = new ImageIcon(getClass().getResource("/resources/Omok.stone.3.white.0.png"));
+        icons[3][1] = new ImageIcon(getClass().getResource("/resources/Omok.stone.3.white.1.png"));
+        icons[3][2] = new ImageIcon(getClass().getResource("/resources/Omok.stone.3.white.2.png"));
         
-        icons[4][0] = new ImageIcon(getClass().getResource("/resources/Omok.stone.6.black.0.png"));
-        icons[4][1] = new ImageIcon(getClass().getResource("/resources/Omok.stone.6.black.1.png"));
-        icons[4][2] = new ImageIcon(getClass().getResource("/resources/Omok.stone.6.black.2.png"));
+        icons[4][0] = new ImageIcon(getClass().getResource("/resources/Omok.stone.6.white.0.png"));
+        icons[4][1] = new ImageIcon(getClass().getResource("/resources/Omok.stone.6.white.1.png"));
+        icons[4][2] = new ImageIcon(getClass().getResource("/resources/Omok.stone.6.white.2.png"));
         
-        icons[5][0] = new ImageIcon(getClass().getResource("/resources/Omok.stone.7.black.0.png"));
-        icons[5][1] = new ImageIcon(getClass().getResource("/resources/Omok.stone.7.black.1.png"));
-        icons[5][2] = new ImageIcon(getClass().getResource("/resources/Omok.stone.7.black.0.png"));
+        icons[5][0] = new ImageIcon(getClass().getResource("/resources/Omok.stone.6.black.0.png"));
+        icons[5][1] = new ImageIcon(getClass().getResource("/resources/Omok.stone.6.black.1.png"));
+        icons[5][2] = new ImageIcon(getClass().getResource("/resources/Omok.stone.6.black.2.png"));
         
-        icons[6][0] = new ImageIcon(getClass().getResource("/resources/Omok.stone.9.white.0.png"));
-        icons[6][1] = new ImageIcon(getClass().getResource("/resources/Omok.stone.9.white.1.png"));
-        icons[6][2] = new ImageIcon(getClass().getResource("/resources/Omok.stone.9.white.2.png"));
+        icons[6][0] = new ImageIcon(getClass().getResource("/resources/Omok.stone.7.black.0.png"));
+        icons[6][1] = new ImageIcon(getClass().getResource("/resources/Omok.stone.7.black.1.png"));
+        icons[6][2] = new ImageIcon(getClass().getResource("/resources/Omok.stone.7.black.0.png"));
+        
+        icons[7][0] = new ImageIcon(getClass().getResource("/resources/Omok.stone.9.white.0.png"));
+        icons[7][1] = new ImageIcon(getClass().getResource("/resources/Omok.stone.9.white.1.png"));
+        icons[7][2] = new ImageIcon(getClass().getResource("/resources/Omok.stone.9.white.2.png"));
     }
 }
