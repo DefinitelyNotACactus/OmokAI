@@ -19,8 +19,12 @@ import javax.swing.Timer;
  */
 public class Game extends JFrame {
     
-    private Player player1;
-    private Player player2;
+    public static final int BOARD_SIZE = 15;
+    
+    private Player black;
+    private Player white;
+    
+    private boolean isAi;
     
     private Timer turnTimer;
     private int counter;
@@ -39,13 +43,14 @@ public class Game extends JFrame {
      * @param player2
      */
     public Game(Player player1, Player player2) {
-        this.player1 = player1;
-        this.player2 = player2;
+        this.black = player1;
+        this.white = player2;
         
         turn = 1;
         counter = 0;
+        isAi = false;
         finished = false;
-        board = new Piece[15][15];
+        board = new Piece[BOARD_SIZE][BOARD_SIZE];
         
         initComponents();
         
@@ -428,11 +433,11 @@ public class Game extends JFrame {
     }
     
     public Player getCurrentPlayer() {
-        return ((turn%2 == 0) ? player1 : player2);
+        return ((turn%2 == 0) ? black : white);
     }
     
     public Player getOtherPlayer() {
-        return ((turn%2 == 0) ? player2 : player1);
+        return ((turn%2 == 0) ? white : black);
     }
     
     public boolean gameFinished() {
@@ -448,6 +453,14 @@ public class Game extends JFrame {
         return counter;
     }
     
+    public Piece[][] getBoard() {
+        return board;
+    }
+    
+    public boolean isAi() {
+        return getCurrentPlayer() == white;
+    }
+    
     public int getAnimationState() {
         return aState;
     }
@@ -456,15 +469,15 @@ public class Game extends JFrame {
         if(!tie) {
             getCurrentPlayer().addWin();
             getOtherPlayer().addLoss();
-            player1WinsLabel.setText("" + player1.getWins());
-            player1LossesLabel.setText("" + player1.getLosses());
-            player2WinsLabel.setText("" + player2.getWins());
-            player2LossesLabel.setText("" + player2.getLosses());
+            player1WinsLabel.setText("" + black.getWins());
+            player1LossesLabel.setText("" + black.getLosses());
+            player2WinsLabel.setText("" + white.getWins());
+            player2LossesLabel.setText("" + white.getLosses());
         } else {
             getCurrentPlayer().addTie();
             getOtherPlayer().addTie();
-            player1TiesLabel.setText("" + player1.getTies());
-            player2TiesLabel.setText("" + player2.getTies());
+            player1TiesLabel.setText("" + black.getTies());
+            player2TiesLabel.setText("" + white.getTies());
         }
     }
     
