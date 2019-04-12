@@ -18,7 +18,8 @@ public class GameState {
     public static final double ONES_POINTS = 1;
 
     private String status;
-    private Game game;
+    private static Game game;
+    private static Piece[][] board;
     private static boolean DEBUG = false;
     private static int moveCount;
 
@@ -27,6 +28,7 @@ public class GameState {
      */
     public GameState(Game game) {
         this.game = game;
+        board = game.getBoard();
     }
 
     /**
@@ -142,23 +144,21 @@ public class GameState {
      * @param player The player's state to analyze
      * @return The utility of the gamestate.
      */
-    public static double getStateUtility(char[][] board, char player) {
-        double[][] maxUtility = new double[board.length][board.length];
+    public static double getStateUtility() {
+        double[][] maxUtility = new double[game.BOARD_SIZE][game.BOARD_SIZE];
 
-        char enemy = getEnemy(player);
         double evaluation = 0.0;
-        int boardLength = board.length;
+        int boardLength = game.BOARD_SIZE;
         int count;
         int lastEnemyEncounteredCol, lastEnemyEncounteredRow;
         int encounteredEnemy, encounteredEnemyY;
-
 
         for (int row = 0; row < boardLength; row++) {
             lastEnemyEncounteredCol = -1;
             lastEnemyEncounteredRow = -1;
             for (int col = 0; col < boardLength; col++) {
 
-                if (board[row][col] == enemy) {
+                if (board[row][col].getOwner() == game.getOtherPlayer()) {
                     lastEnemyEncounteredCol = col;//keep track of the last encountered enemy
                     lastEnemyEncounteredRow = row;
                 }
