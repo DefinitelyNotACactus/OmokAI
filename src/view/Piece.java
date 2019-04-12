@@ -22,12 +22,14 @@ public class Piece extends JButton {
     private int x;
     private int y;
     private Player owner;
+    private int aiPiece; //-1 if owner == null, 0 if owner == black, 1 if owner == white
     
     public Piece(Game game, int x, int y) {
         this.game = game;
         this.x = x;
         this.y = y;
         this.owner = null;
+        this.aiPiece = -1;
         
         initComponents();
     }
@@ -47,6 +49,7 @@ public class Piece extends JButton {
             setOwner();
             setIcon(owner.getIconState(game.getAnimationState()));
             game.processTurn(x, y);
+            aiPiece = game.isAi()? 1 : 0;
             repaint();
         }
     }
@@ -61,5 +64,9 @@ public class Piece extends JButton {
     
     public Player getOwner() {
         return owner;
+    }
+    
+    public int isAiPiece() {
+        return aiPiece;
     }
 }

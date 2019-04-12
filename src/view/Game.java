@@ -359,6 +359,7 @@ public class Game extends JFrame {
         //btReady.setVisible(true);
         finished = false;
         turn = 1;
+        isAi = true;
         nextMove();
         turnTimer.start();
         if(!animationThread.isAlive()) {
@@ -372,6 +373,7 @@ public class Game extends JFrame {
         if(turn > 225) {
             finishGame(true);
         }
+        isAi = !isAi;
         player1TurnLabel.setVisible(((turn%2) == 0));
         player2TurnLabel.setVisible(((turn%2) == 1));
         turnLabel.setText("[" + getCurrentPlayer().getName() + "] turn");
