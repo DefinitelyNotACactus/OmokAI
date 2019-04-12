@@ -179,29 +179,29 @@ public class Game extends JFrame {
         player1TurnLabel.setBounds(401, 56, 81, 176);
         player1TurnLabel.setVisible(false);
 
-        player1PieceLabel.setIcon(player1.getIcon());
+        player1PieceLabel.setIcon(black.getIcon());
         gamePanel.add(player1PieceLabel);
         player1PieceLabel.setBounds(407, 190, 23, 23);
 
         player1NameLabel.setBackground(new java.awt.Color(255, 255, 255));
-        player1NameLabel.setText(player1.getName());
+        player1NameLabel.setText(black.getName());
         player1NameLabel.setOpaque(true);
         player1NameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gamePanel.add(player1NameLabel);
         player1NameLabel.setBounds(407, 154, 70, 14);
 
         player1WinsLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        player1WinsLabel.setText("" + player1.getWins());
+        player1WinsLabel.setText("" + black.getWins());
         gamePanel.add(player1WinsLabel);
         player1WinsLabel.setBounds(445, 172, 20, 13);
 
         player1TiesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        player1TiesLabel.setText("" + player1.getTies());
+        player1TiesLabel.setText("" + black.getTies());
         gamePanel.add(player1TiesLabel);
         player1TiesLabel.setBounds(445, 186, 20, 13);
 
         player1LossesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        player1LossesLabel.setText("" + player1.getLosses());
+        player1LossesLabel.setText("" + black.getLosses());
         gamePanel.add(player1LossesLabel);
         player1LossesLabel.setBounds(445, 200, 20, 13);
 
@@ -214,29 +214,29 @@ public class Game extends JFrame {
         player2TurnLabel.setBounds(487, 56, 81, 176);
         player2TurnLabel.setVisible(false);
 
-        player2PieceLabel.setIcon(player2.getIcon());
+        player2PieceLabel.setIcon(white.getIcon());
         gamePanel.add(player2PieceLabel);
         player2PieceLabel.setBounds(494, 190, 23, 23);
 
         player2NameLabel.setBackground(new java.awt.Color(255, 255, 255));
-        player2NameLabel.setText(player2.getName());
+        player2NameLabel.setText(white.getName());
         player2NameLabel.setOpaque(true);
         player2NameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gamePanel.add(player2NameLabel);
         player2NameLabel.setBounds(493, 154, 70, 14);
 
         player2WinsLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        player2WinsLabel.setText("" + player2.getWins());
+        player2WinsLabel.setText("" + white.getWins());
         gamePanel.add(player2WinsLabel);
         player2WinsLabel.setBounds(531, 172, 20, 13);
 
         player2TiesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        player2TiesLabel.setText("" + player2.getTies());
+        player2TiesLabel.setText("" + white.getTies());
         gamePanel.add(player2TiesLabel);
         player2TiesLabel.setBounds(531, 186, 20, 13);
 
         player2LossesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        player2LossesLabel.setText("" + player2.getLosses());
+        player2LossesLabel.setText("" + white.getLosses());
         gamePanel.add(player2LossesLabel);
         player2LossesLabel.setBounds(531, 200, 20, 13);
 
