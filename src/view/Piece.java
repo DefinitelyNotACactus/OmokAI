@@ -69,4 +69,18 @@ public class Piece extends JButton {
     public int isAiPiece() {
         return aiPiece;
     }
+    
+    @Override
+    public String toString() {
+        switch (isAiPiece()) {
+            case -1:
+                return " ";
+            case 0:
+                return "O";
+            case 1:
+                return "X";
+        }
+        
+        return null;
+    }
 }
