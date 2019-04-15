@@ -424,9 +424,9 @@ public class GameState {
 
                         count = 1; //Sum of how many of our players we encounter in the next 4 spaces
                         for (int x = row + 1, y = col + 1; x < row + 5 && y < col + 5; x++, y++) {
-                            if (board[x][y] == player) {
+                            if (board[x][y].isAiPiece() == AI) {
                                 count++;
-                            } else if (board[x][y] == enemy) {
+                            } else if (board[x][y].isAiPiece() == enemy) {
                                 encounteredEnemy = x;
                                 encounteredEnemyY = y;
                                 break;
@@ -444,7 +444,7 @@ public class GameState {
                                     System.out.println("[BR-D](1)BOARD[" + row + "][" + col + "]: ADDED UTILITY VALUE OF: " + THREES_POINTS);
                             } else if (lastEnemyEncounteredRow > -1) {//we encountered an enemy before seeing our player
                                 if ((row + 1 < boardLength && col - 1 >= 0) && (encounteredEnemy == row + 4 && encounteredEnemyY == col + 4)) {//we have enough room to make a 4, check upwards to see if we can make a 5 (-O-X-XXO--)
-                                    if (board[row + 1][col - 1] != enemy) {
+                                    if (board[row + 1][col - 1].isAiPiece() != enemy) {
                                         evaluation += THREES_POINTS;
                                         if (DEBUG)
                                             System.out.println("[BR-D](2)BOARD[" + row + "][" + col + "]: ADDED UTILITY VALUE OF: " + THREES_POINTS);
@@ -467,11 +467,11 @@ public class GameState {
 
                             for (int b = row - 1, c = col - 1, i = 0; b < boardLength && b < row + 5 && b >= 0 && c >= 0; b++, c++, i++) {
                                 if (DEBUG) System.out.println(b + " " + c);
-                                newChars[i] = board[b][c];
+                                newChars[i] = board[b][c].pieceToChar();
                             }
                             String rowString = new String(newChars);
 
-                            if (isStraightFour(rowString, player)) {//If it is a straight 4
+                            if (isStraightFour(rowString, 'X')) {//If it is a straight 4
                                 if (DEBUG)
                                     System.out.println("[BR-D](1)BOARD[" + row + "][" + col + "]: ADDED UTILITY VALUE OF: " + STRAIGHT_FOUR_POINTS);
                                 evaluation += STRAIGHT_FOUR_POINTS;
@@ -480,7 +480,7 @@ public class GameState {
                                 if (DEBUG)
                                     System.out.println("[BR-D](2)BOARD[" + row + "][" + col + "]: ADDED UTILITY VALUE OF: " + FOURS_POINTS);
                             } else { //If it is possible to have a straight 4, but we have encountered an enemy while searching, check if there is room on left
-                                if (row-1 >= 0 && col-1 >= 0 && board[row - 1][col - 1] != enemy) {
+                                if (row-1 >= 0 && col-1 >= 0 && board[row - 1][col - 1].isAiPiece() != enemy) {
                                     evaluation += FOURS_POINTS;
                                     if (DEBUG)
                                         System.out.println("[BR-D](3)BOARD[" + row + "][" + col + "]: ADDED UTILITY VALUE OF: " + FOURS_POINTS);
