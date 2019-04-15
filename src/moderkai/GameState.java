@@ -113,7 +113,7 @@ public class GameState {
     private static boolean isStraightFour(String in, char player) {
         String straightFour = " " + player + player + player + player + " ";
         if (DEBUG) System.out.println("IsStraightFour? " + in.replaceAll(" ", "-"));
-        return in.contains(straightFour);
+        return in.equals(straightFour);
     }
 
 
@@ -214,28 +214,35 @@ public class GameState {
                             //enemy is blocking us at the edge of the board (OXXXX)
                             if (DEBUG) System.out.println("[horiz]BLOCKING ON EDGE!!!!!!");
                         } else { //check for the straight four
-                            String rowString = "";
-                            int leftBound = 0, rightBound = 0;
-                            
-                            if (col == 0 || col == 14) {
-                                rowString = " ";
-                            } else {
-                                if (col-4 < 0) {
-                                    leftBound = 0;
-                                } else {
-                                    leftBound = col-4;
-                                }        
-                                
-                                if (col+4 > 15) {
-                                    rightBound = 15;
-                                } else {
-                                    rightBound = col+4;
-                                }
+                            char[] newChars = new char[6];
+
+                            for (int b = col - 1, i = 0; b < boardLength && b < col + 5; b++, i++) {
+                                newChars[i] = board[row][b].pieceToChar();
                             }
+                            String rowString = new String(newChars);
                             
-                            for (int i = leftBound; i < rightBound; ++i) {
-                                rowString += board[row][i].toString();
-                            }
+//                            String rowString = "";
+//                            int leftBound = 0, rightBound = 0;
+//                            
+//                            if (col == 0 || col == 14) {
+//                                rowString = " ";
+//                            } else {
+//                                if (col-4 < 0) {
+//                                    leftBound = 0;
+//                                } else {
+//                                    leftBound = col-4;
+//                                }        
+//                                
+//                                if (col+4 > 15) {
+//                                    rightBound = 15;
+//                                } else {
+//                                    rightBound = col+4;
+//                                }
+//                            }
+//                            
+//                            for (int i = leftBound; i < rightBound; ++i) {
+//                                rowString += board[row][i].toString();
+//                            }
                             
                             if (isStraightFour(rowString, 'X')) {//If it is a straight 4
                                 if (DEBUG)
@@ -265,9 +272,9 @@ public class GameState {
 
                         count = 1; //Sum of how many of our players we encounter in the next 4 spaces
                         for (int x = row + 1; x < row + 5; x++) {
-                            if (board[x][col] == player) {
+                            if (board[x][col].isAiPiece() == AI) {
                                 count++;
-                            } else if (board[x][col] == enemy) {
+                            } else if (board[x][col].isAiPiece() == enemy) {
                                 encounteredEnemy = x;
                                 break;
                             }
@@ -284,7 +291,7 @@ public class GameState {
                                     System.out.println("[down](1)BOARD[" + row + "][" + col + "]: ADDED UTILITY VALUE OF: " + THREES_POINTS);
                             } else if (lastEnemyEncounteredRow > -1) {//we encountered an enemy before seeing our player
                                 if (row - 1 >= 0 && encounteredEnemy == row + 4) {//we have enough room to make a 4, check above to see if we can make a 5 (-O-X-XXO--)
-                                    if (board[row - 1][col] != enemy) {
+                                    if (board[row - 1][col].isAiPiece() != enemy) {
                                         evaluation += THREES_POINTS;
                                         if (DEBUG)
                                             System.out.println("[down](2)BOARD[" + row + "][" + col + "]: ADDED UTILITY VALUE OF: " + THREES_POINTS);
@@ -306,7 +313,7 @@ public class GameState {
                             char[] newChars = new char[6];
 
                             for (int b = row - 1, i = 0; b < boardLength && b < row + 5; b++, i++) {
-                                newChars[i] = board[b][col];
+                                newChars[i] = board[b][col].toString();
                             }
                             String rowString = new String(newChars);
 

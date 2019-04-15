@@ -70,6 +70,19 @@ public class Piece extends JButton {
         return aiPiece;
     }
     
+    public char pieceToChar() {
+        switch (isAiPiece()) {
+            case -1:
+                return ' ';
+            case 0:
+                return 'O';
+            case 1:
+                return 'X';
+        }
+        
+        return 'P';
+    }
+    
     @Override
     public String toString() {
         switch (isAiPiece()) {
