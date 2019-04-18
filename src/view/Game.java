@@ -5,6 +5,7 @@
  */
 package view;
 
+import data.Pair;
 import data.Player;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import data.Mordekai;
 
 /**
  *
@@ -21,10 +23,12 @@ public class Game extends JFrame {
     
     public static final int BOARD_SIZE = 15;
     
-    private Player black;
-    private Player white;
+    private Player black; // Human
+    private Mordekai white; // MordekAI
     
     private boolean isAi;
+    private boolean isAiComputing;
+    private Pair aiMove;
     
     private Timer turnTimer;
     private int counter;
@@ -44,7 +48,7 @@ public class Game extends JFrame {
      */
     public Game(Player player1, Player player2) {
         this.black = player1;
-        this.white = player2;
+        this.white = new Mordekai(this, 3);
         
         turn = 1;
         counter = 0;
@@ -90,15 +94,15 @@ public class Game extends JFrame {
         player1PieceLabel = new javax.swing.JLabel();
         player1NameLabel = new javax.swing.JLabel();
         player1WinsLabel = new javax.swing.JLabel();
-        player1TiesLabel = new javax.swing.JLabel();
         player1LossesLabel = new javax.swing.JLabel();
+        player1TiesLabel = new javax.swing.JLabel();
         info1Label = new javax.swing.JLabel();
         player2TurnLabel = new javax.swing.JLabel();
         player2PieceLabel = new javax.swing.JLabel();
         player2NameLabel = new javax.swing.JLabel();
         player2WinsLabel = new javax.swing.JLabel();
-        player2TiesLabel = new javax.swing.JLabel();
         player2LossesLabel = new javax.swing.JLabel();
+        player2TiesLabel = new javax.swing.JLabel();
         info2Label = new javax.swing.JLabel();
         boardPanel = new javax.swing.JPanel();
         actionsPanel = new javax.swing.JPanel();
@@ -195,15 +199,15 @@ public class Game extends JFrame {
         gamePanel.add(player1WinsLabel);
         player1WinsLabel.setBounds(445, 172, 20, 13);
 
-        player1TiesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        player1TiesLabel.setText("" + black.getTies());
-        gamePanel.add(player1TiesLabel);
-        player1TiesLabel.setBounds(445, 186, 20, 13);
-
         player1LossesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        player1LossesLabel.setText("" + black.getLosses());
+        player1LossesLabel.setText("" + black.getTies());
         gamePanel.add(player1LossesLabel);
-        player1LossesLabel.setBounds(445, 200, 20, 13);
+        player1LossesLabel.setBounds(445, 186, 20, 13);
+
+        player1TiesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+        player1TiesLabel.setText("" + black.getLosses());
+        gamePanel.add(player1TiesLabel);
+        player1TiesLabel.setBounds(445, 200, 20, 13);
 
         info1Label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.info0.png"))); // NOI18N
         gamePanel.add(info1Label);
@@ -230,15 +234,15 @@ public class Game extends JFrame {
         gamePanel.add(player2WinsLabel);
         player2WinsLabel.setBounds(531, 172, 20, 13);
 
-        player2TiesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        player2TiesLabel.setText("" + white.getTies());
-        gamePanel.add(player2TiesLabel);
-        player2TiesLabel.setBounds(531, 186, 20, 13);
-
         player2LossesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        player2LossesLabel.setText("" + white.getLosses());
+        player2LossesLabel.setText("" + white.getTies());
         gamePanel.add(player2LossesLabel);
-        player2LossesLabel.setBounds(531, 200, 20, 13);
+        player2LossesLabel.setBounds(531, 186, 20, 13);
+
+        player2TiesLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+        player2TiesLabel.setText("" + white.getLosses());
+        gamePanel.add(player2TiesLabel);
+        player2TiesLabel.setBounds(531, 200, 20, 13);
 
         info2Label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.info0.png"))); // NOI18N
         gamePanel.add(info2Label);
@@ -355,9 +359,11 @@ public class Game extends JFrame {
                 boardPanel.add(piece);
             }
         }
+        white.setBoard(board);
         btStart.setVisible(false);
         //btReady.setVisible(true);
         finished = false;
+        isAiComputing = false;
         turn = 1;
         isAi = true;
         nextMove();
@@ -370,14 +376,28 @@ public class Game extends JFrame {
 
     private void nextMove() {
         turn++;
+        isAi = !isAi;
         if(turn > 225) {
             finishGame(true);
         }
-        isAi = !isAi;
         player1TurnLabel.setVisible(((turn%2) == 0));
         player2TurnLabel.setVisible(((turn%2) == 1));
         turnLabel.setText("[" + getCurrentPlayer().getName() + "] turn");
         resetCounter();
+        if(isAiTurn()) {
+            playAi();
+        }
+    }
+    
+    private void playAi() {
+        aiMove = white.calculateNextMove();
+        if(aiMove == null) {
+            finishGame(true);
+        } else {
+            board[aiMove.getJ()][aiMove.getI()].setOwner(true);
+            board[aiMove.getJ()][aiMove.getI()].repaint();
+            processTurn(aiMove.getJ(), aiMove.getI());
+        }
     }
     
     public void processTurn(int x, int y) {
@@ -459,8 +479,24 @@ public class Game extends JFrame {
         return board;
     }
     
-    public boolean isAi() {
-        return getCurrentPlayer() == white;
+    public boolean isAiTurn() {
+        return isAi;
+    }
+    
+    public boolean isAiComputing() {
+        return isAiComputing;
+    }
+    
+    public void setAiComputing(boolean computing) {
+        isAiComputing = computing;
+    }
+    
+    public Player getHuman() {
+        return black;
+    }
+    
+    public Player getAi() {
+        return white;
     }
     
     public int getAnimationState() {

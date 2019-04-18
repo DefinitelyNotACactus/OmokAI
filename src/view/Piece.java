@@ -14,7 +14,7 @@ import javax.swing.JButton;
  *
  * @author david
  */
-public class Piece extends JButton {
+public class Piece extends JButton implements Cloneable {
     private static final Dimension DIMENSION = new Dimension(23,23);
     
     private Game game;
@@ -46,10 +46,10 @@ public class Piece extends JButton {
     
     private void pieceActionPerformed(ActionEvent evt) {
         if(isEmpty() && !game.gameFinished()) {
-            setOwner();
+            setOwner(false); // The ai will never call this method with a false parameter
             setIcon(owner.getIconState(game.getAnimationState()));
             game.processTurn(x, y);
-            aiPiece = game.isAi()? 1 : 0;
+            aiPiece = game.isAiTurn()? 1 : 0;
             repaint();
         }
     }
@@ -58,8 +58,9 @@ public class Piece extends JButton {
         return (owner == null);
     }
     
-    private void setOwner() {
-        owner = game.getCurrentPlayer();
+    public void setOwner(boolean ai) {
+        owner = (ai) ? game.getAi() : game.getHuman();
+        aiPiece = (ai) ? 1 : 0;
     }
     
     public Player getOwner() {
@@ -95,5 +96,10 @@ public class Piece extends JButton {
         }
         
         return null;
+    }
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }
