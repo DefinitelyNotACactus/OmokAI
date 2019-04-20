@@ -18,18 +18,15 @@ public class Piece extends JButton implements Cloneable {
     private static final Dimension DIMENSION = new Dimension(23,23);
     
     private Game game;
-    
+    private Player owner;
     private int x;
     private int y;
-    private Player owner;
-    private int aiPiece; //-1 if owner == null, 0 if owner == black, 1 if owner == white
     
     public Piece(Game game, int x, int y) {
         this.game = game;
         this.x = x;
         this.y = y;
         this.owner = null;
-        this.aiPiece = -1;
         
         initComponents();
     }
@@ -45,11 +42,10 @@ public class Piece extends JButton implements Cloneable {
     }
     
     private void pieceActionPerformed(ActionEvent evt) {
-        if(isEmpty() && !game.gameFinished()) {
-            setOwner(false); // The ai will never call this method with a false parameter
+        if(isEmpty() && !game.gameFinished() && !game.isAiTurn()) {
+            setOwner(game.getCurrentPlayer()); // The ai will never call this method with a false parameter
             setIcon(owner.getIconState(game.getAnimationState()));
             game.processTurn(x, y);
-            aiPiece = game.isAiTurn()? 1 : 0;
             repaint();
         }
     }
@@ -58,44 +54,12 @@ public class Piece extends JButton implements Cloneable {
         return (owner == null);
     }
     
-    public void setOwner(boolean ai) {
-        owner = (ai) ? game.getAi() : game.getHuman();
-        aiPiece = (ai) ? 1 : 0;
+    public void setOwner(Player newOwner) {
+        owner = newOwner;
     }
     
     public Player getOwner() {
         return owner;
-    }
-    
-    public int isAiPiece() {
-        return aiPiece;
-    }
-    
-    public char pieceToChar() {
-        switch (isAiPiece()) {
-            case -1:
-                return ' ';
-            case 0:
-                return 'O';
-            case 1:
-                return 'X';
-        }
-        
-        return 'P';
-    }
-    
-    @Override
-    public String toString() {
-        switch (isAiPiece()) {
-            case -1:
-                return " ";
-            case 0:
-                return "O";
-            case 1:
-                return "X";
-        }
-        
-        return null;
     }
     
     @Override

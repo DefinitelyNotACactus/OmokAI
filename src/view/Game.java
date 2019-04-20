@@ -6,14 +6,13 @@
 package view;
 
 import data.Pair;
-import data.Player;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import data.Mordekai;
+import data.Player;
 
 /**
  *
@@ -23,9 +22,12 @@ public class Game extends JFrame {
     
     public static final int BOARD_SIZE = 15;
     
-    private Player black; // Human
-    private Mordekai white; // MordekAI
+    private ModeSelect selector;
     
+    private Player black; // Human
+    private Player white; // Player 2 (or Mordekai)
+    
+    private boolean isAivsPlayer;
     private boolean isAi;
     private boolean isAiComputing;
     private Pair aiMove;
@@ -43,12 +45,11 @@ public class Game extends JFrame {
     
     /**
      * Creates new form Game
-     * @param player1
-     * @param player2
      */
-    public Game(Player player1, Player player2) {
-        this.black = player1;
-        this.white = new Mordekai(this, 3);
+    public Game() {
+        selector = new ModeSelect(this);
+        black = new Player("Player 1", 0);
+        white = new Player("Player 2", 1);
         
         turn = 1;
         counter = 0;
@@ -58,13 +59,10 @@ public class Game extends JFrame {
         
         initComponents();
         
-        turnTimer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if(!finished) {
-                    counter++;
-                    timerLabel.setText(String.format("%02d:%02d", counter/60, counter%60));
-                }
+        turnTimer = new Timer(1000, (ActionEvent evt) -> {
+            if(!finished) {
+                counter++;
+                timerLabel.setText(String.format("%02d:%02d", counter/60, counter%60));
             }
         });
 
@@ -119,6 +117,8 @@ public class Game extends JFrame {
 
         gamePanel.setSize(new java.awt.Dimension(734, 429));
         gamePanel.setLayout(null);
+        gamePanel.add(selector);
+        selector.setBounds(287, 134, 160, 160);
 
         censorLabel.setBackground(new java.awt.Color(255, 255, 255));
         censorLabel.setOpaque(true);
@@ -131,6 +131,7 @@ public class Game extends JFrame {
         btReady.setBorderPainted(false);
         btReady.setContentAreaFilled(false);
         btReady.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btReady.disabled.0.png"))); // NOI18N
+        btReady.setEnabled(false);
         btReady.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btReady.pressed.0.png"))); // NOI18N
         btReady.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btReady.mouseOver.0.png"))); // NOI18N
         btReady.addActionListener(new java.awt.event.ActionListener() {
@@ -146,6 +147,7 @@ public class Game extends JFrame {
         btStart.setBorderPainted(false);
         btStart.setContentAreaFilled(false);
         btStart.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btStart.disabled.0.png"))); // NOI18N
+        btStart.setEnabled(false);
         btStart.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btStart.pressed.0.png"))); // NOI18N
         btStart.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Common/Common.btStart.mouseOver.0.png"))); // NOI18N
         btStart.addActionListener(new java.awt.event.ActionListener() {
@@ -359,7 +361,10 @@ public class Game extends JFrame {
                 boardPanel.add(piece);
             }
         }
-        white.setBoard(board);
+        if(white instanceof Mordekai) {
+            Mordekai ai = (Mordekai) white;
+            ai.setBoard(board);
+        }
         btStart.setVisible(false);
         //btReady.setVisible(true);
         finished = false;
@@ -376,7 +381,6 @@ public class Game extends JFrame {
 
     private void nextMove() {
         turn++;
-        isAi = !isAi;
         if(turn > 225) {
             finishGame(true);
         }
@@ -384,19 +388,22 @@ public class Game extends JFrame {
         player2TurnLabel.setVisible(((turn%2) == 1));
         turnLabel.setText("[" + getCurrentPlayer().getName() + "] turn");
         resetCounter();
-        if(isAiTurn()) {
+        
+        isAi = !isAi;
+        if(isAiTurn() && isAivsPlayer) {
             playAi();
         }
     }
     
     private void playAi() {
-        aiMove = white.calculateNextMove();
+        Mordekai ai = (Mordekai) white;
+        aiMove = ai.calculateNextMove();
         if(aiMove == null) {
             finishGame(true);
         } else {
-            board[aiMove.getJ()][aiMove.getI()].setOwner(true);
+            board[aiMove.getJ()][aiMove.getI()].setOwner(white);
             board[aiMove.getJ()][aiMove.getI()].repaint();
-            processTurn(aiMove.getJ(), aiMove.getI());
+            processTurn(aiMove.getI(), aiMove.getJ());
         }
     }
     
@@ -454,6 +461,35 @@ public class Game extends JFrame {
         revalidate();
     }
     
+    public void modeSelected(int mode, Player player1, Player player2) {
+        isAivsPlayer = (mode == 0);
+        setBlack(player1);
+        setWhite(player2);
+        
+        btStart.setEnabled(true); 
+        revalidate();
+    }
+    
+    private void setWhite(Player player) {
+        white = player;
+        
+        player2NameLabel.setText(white.getName());
+        player2WinsLabel.setText("" + white.getWins());
+        player2TiesLabel.setText("" + white.getTies());
+        player2LossesLabel.setText("" + white.getLosses());
+        player2PieceLabel.setIcon(white.getIcon());
+    }
+    
+    private void setBlack(Player player) {
+        black = player;
+        
+        player1NameLabel.setText(black.getName());
+        player1WinsLabel.setText("" + black.getWins());
+        player1TiesLabel.setText("" + black.getTies());
+        player1LossesLabel.setText("" + black.getLosses());
+        player1PieceLabel.setIcon(black.getIcon());
+    }
+    
     public Player getCurrentPlayer() {
         return ((turn%2 == 0) ? black : white);
     }
@@ -480,7 +516,7 @@ public class Game extends JFrame {
     }
     
     public boolean isAiTurn() {
-        return isAi;
+        return isAi && isAivsPlayer;
     }
     
     public boolean isAiComputing() {
@@ -491,11 +527,11 @@ public class Game extends JFrame {
         isAiComputing = computing;
     }
     
-    public Player getHuman() {
+    public Player getBlack() {
         return black;
     }
     
-    public Player getAi() {
+    public Player getWhite() {
         return white;
     }
     
@@ -541,6 +577,35 @@ public class Game extends JFrame {
                 }
             }
         }
+    }
+    
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> {
+            new Game().setVisible(true);
+        });
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

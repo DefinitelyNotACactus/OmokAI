@@ -148,7 +148,7 @@ public class Mordekai extends Player {
             // Play the move to that temporary board without drawing anything
             System.out.println(move.getI());
             System.out.println(move.getJ());
-            dummyBoard[move.getI()][move.getJ()].setOwner(true);
+            dummyBoard[move.getI()][move.getJ()].setOwner(this);
             // If the white player has a winning score in that temporary board, return the move.
             if(getScore(dummyBoard, false, false) >= WIN_SCORE) {
                 winningMove[1] = move.getI();
@@ -186,7 +186,7 @@ public class Mordekai extends Player {
                 // Create a temporary board that is equivalent to the current board
                 Piece[][] dummyBoard = copyBoard(board);
                 // Play the move to that temporary board without drawing anything
-                dummyBoard[move.getI()][move.getJ()].setOwner(true);
+                dummyBoard[move.getI()][move.getJ()].setOwner(this);
 
                 // Call the minimax function for the next depth, to look for a minimum score.
                 Object[] tempMove = minimaxSearchAB(depth-1, dummyBoard, !max, alpha, beta);
@@ -211,7 +211,7 @@ public class Mordekai extends Player {
             bestMove[2] = allPossibleMoves.get(0).getJ();
             for(Pair move : allPossibleMoves) {
                 Piece[][] dummyBoard = copyBoard(board);
-                dummyBoard[move.getI()][move.getJ()].setOwner(false);
+                dummyBoard[move.getI()][move.getJ()].setOwner(game.getWhite());
                 Object[] tempMove = minimaxSearchAB(depth-1, dummyBoard, !max, alpha, beta);
                 // Updating beta
                 if(((Double)tempMove[0]) < beta) {
@@ -250,7 +250,7 @@ public class Mordekai extends Player {
         
         for(int i = 0; i < testBoard.length; i++) {
             for(int j=0; j< testBoard[0].length; j++) {
-                if(testBoard[i][j].getOwner() == (opponent ? game.getHuman() : this)) {
+                if(testBoard[i][j].getOwner() == (opponent ? game.getBlack() : this)) {
                     consecutive++;
                 } else if(testBoard[i][j].isEmpty()) {
                     if(consecutive > 0) {
@@ -283,7 +283,7 @@ public class Mordekai extends Player {
         
         for(int j =0; j < testBoard[0].length; j++) {
             for(int i = 0; i < testBoard.length; i++) {
-                if(testBoard[i][j].getOwner() == (opponent ? game.getHuman() : this)) {
+                if(testBoard[i][j].getOwner() == (opponent ? game.getBlack() : this)) {
                     consecutive++;
                 } else if(testBoard[i][j].isEmpty()) {
                     if(consecutive > 0) {
@@ -320,7 +320,7 @@ public class Mordekai extends Player {
             iEnd = Math.min(testBoard.length - 1, k);
             for (int i = iStart; i <= iEnd; ++i) {
                 j = k - i;
-                if(testBoard[i][j].getOwner() == (opponent ? game.getHuman() : this)) {
+                if(testBoard[i][j].getOwner() == (opponent ? game.getBlack() : this)) {
                     consecutive++;
                 } else if(testBoard[i][j].isEmpty()) {
                     if(consecutive > 0) {
@@ -351,7 +351,7 @@ public class Mordekai extends Player {
             iEnd = Math.min(testBoard.length + k - 1, testBoard.length-1);
             for (int i = iStart; i <= iEnd; ++i) {
                 j = i - k;
-                if(testBoard[i][j].getOwner() == (opponent ? game.getHuman() : this)) {
+                if(testBoard[i][j].getOwner() == (opponent ? game.getBlack() : this)) {
                     consecutive++;
                 } else if(testBoard[i][j].isEmpty()) {
                     if(consecutive > 0) {

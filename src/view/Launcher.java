@@ -15,6 +15,7 @@ import view.util.ComboBoxRenderer;
  *
  * @author david
  */
+@Deprecated
 public class Launcher extends JFrame {
 
     /**
@@ -44,16 +45,34 @@ public class Launcher extends JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        player2TextField = new javax.swing.JTextField();
+        player2Label = new javax.swing.JLabel();
+        player2ComboBox = new javax.swing.JComboBox(array);
+        btReady2 = new javax.swing.JButton();
         titleLabel = new javax.swing.JLabel();
         playerOptionPanel = new javax.swing.JPanel();
         player1Label = new javax.swing.JLabel();
-        player2Label = new javax.swing.JLabel();
         player1TextField = new javax.swing.JTextField();
-        player2TextField = new javax.swing.JTextField();
         player1ComboBox = new javax.swing.JComboBox(array);
-        player2ComboBox = new javax.swing.JComboBox(array);
         btReady1 = new javax.swing.JButton();
-        btReady2 = new javax.swing.JButton();
+
+        player2TextField.setColumns(16);
+        player2TextField.setText("Player 2");
+
+        player2Label.setBackground(new java.awt.Color(255, 255, 255));
+        player2Label.setText("Player 2");
+        player2Label.setOpaque(true);
+
+        player2ComboBox.setSelectedIndex(1);
+        player2ComboBox.setRenderer(renderer);
+
+        btReady2.setBackground(new java.awt.Color(255, 255, 255));
+        btReady2.setText("Ready");
+        btReady2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btReady2ActionPerformed(evt);
+            }
+        });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Launcher");
@@ -66,36 +85,22 @@ public class Launcher extends JFrame {
 
         player1Label.setBackground(new java.awt.Color(0, 0, 0));
         player1Label.setForeground(new java.awt.Color(255, 255, 255));
-        player1Label.setText("Player 1");
+        player1Label.setText("Player");
         player1Label.setOpaque(true);
         playerOptionPanel.add(player1Label);
         player1Label.setHorizontalAlignment(SwingConstants.CENTER);
 
-        player2Label.setBackground(new java.awt.Color(255, 255, 255));
-        player2Label.setText("Player 2");
-        player2Label.setOpaque(true);
-        playerOptionPanel.add(player2Label);
-        player2Label.setHorizontalAlignment(SwingConstants.CENTER);
-
         player1TextField.setBackground(new java.awt.Color(0, 0, 0));
         player1TextField.setColumns(16);
         player1TextField.setForeground(new java.awt.Color(255, 255, 255));
-        player1TextField.setText("Player 1");
+        player1TextField.setText("Human");
         playerOptionPanel.add(player1TextField);
-
-        player2TextField.setColumns(16);
-        player2TextField.setText("Player 2");
-        playerOptionPanel.add(player2TextField);
 
         player1ComboBox.setBackground(new java.awt.Color(0, 0, 0));
         player1ComboBox.setForeground(new java.awt.Color(255, 255, 255));
         player1ComboBox.setSelectedIndex(0);
         player1ComboBox.setRenderer(renderer);
         playerOptionPanel.add(player1ComboBox);
-
-        player2ComboBox.setSelectedIndex(1);
-        player2ComboBox.setRenderer(renderer);
-        playerOptionPanel.add(player2ComboBox);
 
         btReady1.setBackground(new java.awt.Color(0, 0, 0));
         btReady1.setForeground(new java.awt.Color(255, 255, 255));
@@ -107,15 +112,6 @@ public class Launcher extends JFrame {
         });
         playerOptionPanel.add(btReady1);
 
-        btReady2.setBackground(new java.awt.Color(255, 255, 255));
-        btReady2.setText("Ready");
-        btReady2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btReady2ActionPerformed(evt);
-            }
-        });
-        playerOptionPanel.add(btReady2);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -123,7 +119,7 @@ public class Launcher extends JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(playerOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(playerOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
                     .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -147,13 +143,11 @@ public class Launcher extends JFrame {
             btReady1.setEnabled(false);
             player1ComboBox.setEnabled(false);
             player1TextField.setEnabled(false);
-            player1 = new Player(player1TextField.getText(), (Integer) player1ComboBox.getSelectedItem());
-            if(!btReady2.isEnabled()) {
-                new Game(player1, player2).setVisible(true);
-                dispose();
-            }
+            player1 = new Player(player1TextField.getText(), (Integer) player1ComboBox.getSelectedItem());      
+            //new Game(player1).setVisible(true);
+            dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "The pieces must be different!", "Warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "You can't pick this piece!", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_btReady1ActionPerformed
 
@@ -164,46 +158,13 @@ public class Launcher extends JFrame {
             player2TextField.setEnabled(false);
             player2 = new Player(player2TextField.getText(), (Integer) player2ComboBox.getSelectedItem());            
             if(!btReady1.isEnabled()) {
-                new Game(player1, player2).setVisible(true);
+                //new Game(player1).setVisible(true);
                 dispose();
             }
         } else {
             JOptionPane.showMessageDialog(this, "The pieces must be different!", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_btReady2ActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            new Launcher().setVisible(true);
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btReady1;
