@@ -555,6 +555,15 @@ public class Game extends JFrame {
         }
     }
     
+    /**
+     * Prints a message on the chatlog.
+     * TODO: An actual chatlog, not a sout.
+     * @param message The message to print
+     */
+    public void sendMessage(String message) {
+        System.out.println(message);
+    }
+    
     private void animatePieces() {
         while(true) {
             if(!finished) {

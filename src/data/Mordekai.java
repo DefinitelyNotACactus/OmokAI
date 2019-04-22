@@ -5,8 +5,6 @@
  */
 package data;
 
-import data.Pair;
-import data.Player;
 import java.util.ArrayList;
 import java.util.List;
 import view.Game;
@@ -112,14 +110,13 @@ public class Mordekai extends Player {
         // Check if any available move can finish the game
         Object[] bestMove = searchWinningMove(); 
         if(bestMove != null ) {
-            System.out.println("Finisher!");
+            game.sendMessage("Finisher!");
             x = (Integer)(bestMove[2]);
             y = (Integer)(bestMove[1]);
 
         } else {
             // If there is no such move, search the minimax tree with suggested depth.
             bestMove = minimaxSearchAB(depth, board, true, -1.0, WIN_SCORE);
-            System.out.println(bestMove[1].toString());
             if(bestMove[1] == null) {
                     game.setAiComputing(false);
                     evaluationCount=0;
@@ -129,7 +126,7 @@ public class Mordekai extends Player {
                     y = (Integer)(bestMove[1]);
             }
         }
-        System.out.println("Cases calculated: " + evaluationCount + " Calculation time: " + (System.currentTimeMillis() - startTime) + " ms");
+        game.sendMessage("Cases calculated: " + evaluationCount + " Calculation time: " + (System.currentTimeMillis() - startTime) + " ms");
         game.setAiComputing(false);
         evaluationCount=0;
         return new Pair(x, y);
@@ -144,10 +141,7 @@ public class Mordekai extends Player {
             evaluationCount++;
             // Create a temporary board that is equivalent to the current board
             Piece[][] dummyBoard = copyBoard(board);
-            System.out.println(dummyBoard[0][0].toString());
             // Play the move to that temporary board without drawing anything
-            System.out.println(move.getI());
-            System.out.println(move.getJ());
             dummyBoard[move.getI()][move.getJ()].setOwner(this);
             // If the white player has a winning score in that temporary board, return the move.
             if(getScore(dummyBoard, false, false) >= WIN_SCORE) {
@@ -211,7 +205,7 @@ public class Mordekai extends Player {
             bestMove[2] = allPossibleMoves.get(0).getJ();
             for(Pair move : allPossibleMoves) {
                 Piece[][] dummyBoard = copyBoard(board);
-                dummyBoard[move.getI()][move.getJ()].setOwner(game.getWhite());
+                dummyBoard[move.getI()][move.getJ()].setOwner(game.getBlack());
                 Object[] tempMove = minimaxSearchAB(depth-1, dummyBoard, !max, alpha, beta);
                 // Updating beta
                 if(((Double)tempMove[0]) < beta) {
