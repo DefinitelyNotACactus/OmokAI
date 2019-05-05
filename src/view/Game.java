@@ -5,7 +5,6 @@
  */
 package view;
 
-import data.Pair;
 import java.awt.event.ActionEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -30,7 +29,6 @@ public class Game extends JFrame {
     private boolean isAivsPlayer;
     private boolean isAi;
     private boolean isAiComputing;
-    private Pair aiMove;
     
     private Timer turnTimer;
     private int counter;
@@ -397,14 +395,8 @@ public class Game extends JFrame {
     
     private void playAi() {
         Mordekai ai = (Mordekai) white;
-        aiMove = ai.calculateNextMove();
-        if(aiMove == null) {
-            finishGame(true);
-        } else {
-            board[aiMove.getJ()][aiMove.getI()].setOwner(white);
-            board[aiMove.getJ()][aiMove.getI()].repaint();
-            processTurn(aiMove.getI(), aiMove.getJ());
-        }
+        ai.computeNextMove();
+        ai.getWorker().execute();
     }
     
     public void processTurn(int x, int y) {
@@ -446,7 +438,7 @@ public class Game extends JFrame {
         return (count == 5);
     }
     
-    private void finishGame(boolean tie) {
+    public void finishGame(boolean tie) {
         if(!tie) {
         turnLabel.setText("[" + getCurrentPlayer().getName() + "] has won!");
         } else {
@@ -513,6 +505,12 @@ public class Game extends JFrame {
     
     public Piece[][] getBoard() {
         return board;
+    }
+    
+    public void setPieceOwnerAtPosition(int x, int y) {
+        board[y][x].setOwner(white); //Only the AI calls this method
+        board[y][x].repaint();
+        processTurn(x, y);
     }
     
     public boolean isAiTurn() {

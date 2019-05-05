@@ -7,6 +7,10 @@ package data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.SwingWorker;
 import view.Game;
 import view.Piece;
 
@@ -20,21 +24,30 @@ public class Mordekai extends Player {
     private Piece[][] board;
     
     private List<Pair> moves;
+    private Pair nextMove;
+    private SwingWorker<Pair, Void> worker;
+    
     private int evaluationCount;
     private int depth;
+    
     public final static int WIN_SCORE = 100000000;
     
     public Mordekai(Game game, int depth) {
         super("Mordekai", 1);
+        
         this.game = game;
         this.depth = depth;
         evaluationCount = 0;
     }
     
+    public SwingWorker<Pair, Void> getWorker() {
+        return worker;
+    }
+    
     public List<Pair> getMoves() {
         return moves;
     }
-    
+        
     public void setBoard(Piece[][] newBoard) {
         board = newBoard;
     }
@@ -102,7 +115,30 @@ public class Mordekai extends Player {
         return moves;
     }
     
-    public Pair calculateNextMove() {
+    public void computeNextMove() {
+        worker = new SwingWorker<Pair, Void>() {
+            @Override
+            public Pair doInBackground() {
+                return calculateNextMove();
+            }
+            
+            @Override
+            public void done() {
+                try {
+                    nextMove = get();
+                    if(nextMove == null) {
+                        game.finishGame(true);
+                    } else {
+                        game.setPieceOwnerAtPosition(nextMove.getI(), nextMove.getJ());
+                    }
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(Mordekai.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+    }
+    
+    private Pair calculateNextMove() {
         board = game.getBoard();
         game.setAiComputing(true);
         int x, y;
@@ -128,7 +164,8 @@ public class Mordekai extends Player {
         }
         game.sendMessage("Cases calculated: " + evaluationCount + " Calculation time: " + (System.currentTimeMillis() - startTime) + " ms");
         game.setAiComputing(false);
-        evaluationCount=0;
+        evaluationCount = 0;
+        
         return new Pair(x, y);
     }
     
@@ -406,5 +443,4 @@ public class Mordekai extends Player {
                 return WIN_SCORE*2;
         }
     }
-    
 }
