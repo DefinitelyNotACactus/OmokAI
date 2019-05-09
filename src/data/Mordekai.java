@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package data;
 
 import java.util.ArrayList;
@@ -16,7 +11,9 @@ import view.Piece;
 
 /**
  *
- * @author david
+ * @author David
+ * @author Luan
+ * @author Renan
  */
 public class Mordekai extends Player {
 
@@ -190,11 +187,14 @@ public class Mordekai extends Player {
         return null;
     }
     
-    /*
-     * alpha : Best AI Move (Max)
-     * beta : Best Player Move (Min)
-     * returns: {score, move[0], move[1]}
-     * */
+    /** Searches for a move using the minimax algorithm
+     * @param depth The search depth
+     * @param board The board to be searched
+     * @param max An boolean for the type of search
+     * @param alpha Best AI Move (Max)
+     * @param beta Best Player Move (Min)
+     * @return An array with { score, move[0], move[1]}
+     **/
     private Object[] minimaxSearchAB(int depth, Piece[][] board, boolean max, double alpha, double beta) {
         if(depth == 0) {
             Object[] x = {
