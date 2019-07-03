@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package view;
 
 import data.Mordekai;
@@ -17,7 +12,21 @@ import view.util.ComboBoxRenderer;
  * @author david
  */
 public class ModeSelect extends JPanel {
-
+    
+    public enum ModeEnum {
+        UNDEFINED(-1), AI_ONLY(0), PLAYER_AI(1), PLAYER_PLAYER(2);
+        
+        private final int code;
+        
+        private ModeEnum(int code) {
+            this.code = code;
+        }
+        
+        public int getModeCode() {
+            return code;
+        }
+    }
+    
     private ComboBoxRenderer renderer;
     private Integer array[];
     
@@ -27,7 +36,7 @@ public class ModeSelect extends JPanel {
      * 0: Player vs. AI.
      * 1: Player vs. Player.
      */
-    private int mode;
+    private ModeEnum mode;
     private Game game;
     private Player player1;
     private Player player2;
@@ -40,7 +49,7 @@ public class ModeSelect extends JPanel {
         for(int i = 0; i < 8; i++) {
             array[i] = i;
         }
-        mode = -1;
+        mode = ModeEnum.UNDEFINED;
         
         initComponents();
         add(modePanel);
@@ -67,6 +76,7 @@ public class ModeSelect extends JPanel {
         titleLabel = new javax.swing.JLabel();
         btPvai = new javax.swing.JButton();
         btPvp = new javax.swing.JButton();
+        btAiRoyale = new javax.swing.JButton();
 
         createPlayer1Panel.setBackground(new java.awt.Color(0, 0, 0));
         createPlayer1Panel.setMinimumSize(new java.awt.Dimension(160, 160));
@@ -146,28 +156,38 @@ public class ModeSelect extends JPanel {
         });
         modePanel.add(btPvp);
 
+        btAiRoyale.setBackground(new java.awt.Color(255, 255, 255));
+        btAiRoyale.setFont(new java.awt.Font("Helvetica Neue", 0, 13)); // NOI18N
+        btAiRoyale.setText("AI vs. AI");
+        btAiRoyale.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAiRoyaleActionPerformed(evt);
+            }
+        });
+        modePanel.add(btAiRoyale);
+
         setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btPvaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btPvaiActionPerformed
-        mode = 0;
+        mode = ModeEnum.PLAYER_AI;
         remove(modePanel);
         add(createPlayer1Panel);
         revalidate();
     }//GEN-LAST:event_btPvaiActionPerformed
 
     private void btPvpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btPvpActionPerformed
-        mode = 1;
+        mode = ModeEnum.PLAYER_PLAYER;
         remove(modePanel);
         add(createPlayer1Panel);
         revalidate();
     }//GEN-LAST:event_btPvpActionPerformed
 
     private void btPlayer1ReadyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btPlayer1ReadyActionPerformed
-        if((mode == 0 && player2PieceComboBox.getSelectedItem() != player1PieceComboBox.getSelectedItem()) || mode == 1) {
+        if((mode == ModeEnum.PLAYER_AI && player2PieceComboBox.getSelectedItem() != player1PieceComboBox.getSelectedItem()) || mode == ModeEnum.PLAYER_PLAYER) {
             player1 = new Player(player1NameTextField.getText(), (Integer) player1PieceComboBox.getSelectedItem());
-            if(mode == 1) {
+            if(mode == ModeEnum.PLAYER_PLAYER) {
                 remove(createPlayer1Panel);
                 add(createPlayer2Panel);
             } else {
@@ -190,8 +210,20 @@ public class ModeSelect extends JPanel {
         }
     }//GEN-LAST:event_btPlayer2ReadyActionPerformed
 
+    private void btAiRoyaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAiRoyaleActionPerformed
+        mode = ModeEnum.AI_ONLY;
+        player1 = new Mordekai(game, 4);
+        player1.setName("Mordekai 1");
+        player1.changeIcon(0);
+        player2 = new Mordekai(game, 3);
+        player2.setName("Mordekai 2");
+        game.modeSelected(mode, player1, player2);
+        setVisible(false);
+    }//GEN-LAST:event_btAiRoyaleActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btAiRoyale;
     private javax.swing.JButton btPlayer1Ready;
     private javax.swing.JButton btPlayer2Ready;
     private javax.swing.JButton btPvai;

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package data;
 
 import java.io.Serializable;
@@ -16,9 +11,9 @@ import view.util.ComboBoxRenderer;
 public class Player implements Serializable { //we may want to serialize this later
     private static final long serialVersionUID = 13L;
     
-    private final String name;
-    private final ImageIcon icon;
-    private final int iconId;
+    private String name;
+    private ImageIcon icon;
+    private int iconId;
     
     private int wins;
     private int ties;
@@ -34,8 +29,17 @@ public class Player implements Serializable { //we may want to serialize this la
         losses = 0;
     }
     
+    public void setName(String newName) {
+        name = newName;
+    }
+    
     public String getName() {
         return name;
+    }
+    
+    public void changeIcon(int newIconId) {
+        iconId = newIconId;
+        icon = ComboBoxRenderer.icons[iconId][0];
     }
     
     public ImageIcon getIcon() {

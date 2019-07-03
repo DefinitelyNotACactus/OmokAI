@@ -2,11 +2,13 @@ package data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import view.Game;
+import view.ModeSelect.ModeEnum;
 import view.Piece;
 
 /**
@@ -44,11 +46,20 @@ public class Mordekai extends Player {
     public List<Pair> getMoves() {
         return moves;
     }
-        
+     
+    /** Sets the board which the AI is playing
+     * 
+     * @param newBoard Board used by the AI
+     */
     public void setBoard(Piece[][] newBoard) {
         board = newBoard;
     }
     
+    /** Clones a board
+     * 
+     * @param target Board to be cloned
+     * @return A clone of the parameter board
+     */
     public Piece[][] copyBoard(Piece[][] target) {
         int length = target.length;
         Piece[][] copy = new Piece[target.length][target[0].length];
@@ -63,7 +74,12 @@ public class Mordekai extends Player {
             return null;
         }
     }
-    
+
+    /** Gets all the possible moves on a board
+     * 
+     * @param board Board to be searched for moves
+     * @return An list containing all possible moves in the given board
+     */
     public List<Pair> generateMoves(Piece[][] board) {
         moves = new ArrayList<>();
         // Look for cells that has at least one stone in an adjacent cell.
@@ -112,13 +128,22 @@ public class Mordekai extends Player {
         return moves;
     }
     
+    /** Interface for AI computation calls
+     * 
+     */
     public void computeNextMove() {
         worker = new SwingWorker<Pair, Void>() {
+            /**
+             * Computes the next move on background
+             */
             @Override
             public Pair doInBackground() {
                 return calculateNextMove();
             }
-            
+
+            /**
+             * Updates the game when done
+             */
             @Override
             public void done() {
                 try {
@@ -126,7 +151,7 @@ public class Mordekai extends Player {
                     if(nextMove == null) {
                         game.finishGame(true);
                     } else {
-                        game.setPieceOwnerAtPosition(nextMove.getI(), nextMove.getJ());
+                        game.setPieceOwnerAtPosition(Mordekai.this, nextMove.getI(), nextMove.getJ());
                     }
                 } catch (InterruptedException | ExecutionException ex) {
                     Logger.getLogger(Mordekai.class.getName()).log(Level.SEVERE, null, ex);
@@ -135,14 +160,25 @@ public class Mordekai extends Player {
         };
     }
     
+    /** Generate the AI next move
+     * 
+     * @return A Pair object containing the best move found
+     */
     private Pair calculateNextMove() {
         board = game.getBoard();
         game.setAiComputing(true);
         int x, y;
         long startTime = System.currentTimeMillis();
         // Check if any available move can finish the game
-        Object[] bestMove = searchWinningMove(); 
-        if(bestMove != null ) {
+        Object[] bestMove = null;
+        if(game.getTurnNumber() == 2 && game.getMode() == ModeEnum.PLAYER_PLAYER) {
+            Random rand = new Random();
+            return new Pair(rand.nextInt(Game.BOARD_SIZE), rand.nextInt(Game.BOARD_SIZE));
+        }
+        if(game.getTurnNumber() > 8) {
+            bestMove = searchWinningMove();
+        }
+        if(bestMove != null) {
             game.sendMessage("Finisher!");
             x = (Integer)(bestMove[2]);
             y = (Integer)(bestMove[1]);
@@ -152,7 +188,7 @@ public class Mordekai extends Player {
             bestMove = minimaxSearchAB(depth, board, true, -1.0, WIN_SCORE);
             if(bestMove[1] == null) {
                     game.setAiComputing(false);
-                    evaluationCount=0;
+                    evaluationCount = 0;
                     return null;
             } else {
                     x = (Integer)(bestMove[2]);
@@ -166,6 +202,10 @@ public class Mordekai extends Player {
         return new Pair(x, y);
     }
     
+    /** Searches for any possible winning moves
+     * 
+     * @return An Object array with the coordinate if found, otherwise, null.
+     */
     private Object[] searchWinningMove() {
         List<Pair> allPossibleMoves = generateMoves(board);
         Object[] winningMove = new Object[3];
@@ -178,7 +218,7 @@ public class Mordekai extends Player {
             // Play the move to that temporary board without drawing anything
             dummyBoard[move.getI()][move.getJ()].setOwner(this);
             // If the white player has a winning score in that temporary board, return the move.
-            if(getScore(dummyBoard, false, false) >= WIN_SCORE) {
+            if(getScore(dummyBoard, !game.isWhiteTurn(), !game.isWhiteTurn()) >= WIN_SCORE) {
                 winningMove[1] = move.getI();
                 winningMove[2] = move.getJ();
                 return winningMove;
@@ -262,6 +302,12 @@ public class Mordekai extends Player {
         return bestMove;
     }
     
+    /** Evaluates the board
+     * 
+     * @param boardToEvaluate Board to be evaluated
+     * @param myTurn A boolean signaling if it's the AI turn
+     * @return A double with the current value of the given board
+     */
     private double evaluateBoard(Piece[][] boardToEvaluate, boolean myTurn) {
         double opponentScore = getScore(boardToEvaluate, true, myTurn), myScore = getScore(boardToEvaluate, false, myTurn);
         evaluationCount++;
@@ -271,6 +317,13 @@ public class Mordekai extends Player {
         return myScore/opponentScore;
     }
     
+    /** Gets the score of the board
+     * 
+     * @param testBoard Board to be tested
+     * @param opponent A boolean signaling if it's the opponent score
+     * @param myTurn A boolean signaling if it's the AI turn
+     * @return An int with the score obtained
+     */
     private int getScore(Piece[][] testBoard, boolean opponent, boolean myTurn) {
         int h = evaluateHorizontal(testBoard, opponent, myTurn), v = evaluateVertical(testBoard, opponent, myTurn), d = evaluateDiagonal(testBoard, opponent, myTurn);
         return h + v + d;
@@ -279,11 +332,11 @@ public class Mordekai extends Player {
     private int evaluateHorizontal(Piece[][] testBoard, boolean opponent, boolean myTurn) {
         int consecutive = 0, blocks = 2, score = 0;
         
-        for(int i = 0; i < testBoard.length; i++) {
-            for(int j=0; j< testBoard[0].length; j++) {
-                if(testBoard[i][j].getOwner() == (opponent ? game.getBlack() : this)) {
+        for(Piece[] pieces : testBoard) {
+            for(Piece piece : pieces) {
+                if(piece.getOwner() == (opponent ? game.getBlack() : this)) {
                     consecutive++;
-                } else if(testBoard[i][j].isEmpty()) {
+                } else if(piece.isEmpty()) {
                     if(consecutive > 0) {
                         blocks--;
                         score += getConsecutiveSetScore(consecutive, blocks, opponent == myTurn);
@@ -306,17 +359,18 @@ public class Mordekai extends Player {
             consecutive = 0;
             blocks = 2;
         }
+        
         return score;
     }
     
     private int evaluateVertical(Piece[][] testBoard, boolean opponent, boolean myTurn) {
         int consecutive = 0, blocks = 2, score = 0;
         
-        for(int j =0; j < testBoard[0].length; j++) {
-            for(int i = 0; i < testBoard.length; i++) {
-                if(testBoard[i][j].getOwner() == (opponent ? game.getBlack() : this)) {
+        for(Piece[] pieces : testBoard) {
+            for(Piece piece : pieces) {
+                if(piece.getOwner() == (opponent ? game.getBlack() : this)) {
                     consecutive++;
-                } else if(testBoard[i][j].isEmpty()) {
+                } else if(piece.isEmpty()) {
                     if(consecutive > 0) {
                         blocks--;
                         score += getConsecutiveSetScore(consecutive, blocks, opponent == myTurn);
@@ -339,6 +393,7 @@ public class Mordekai extends Player {
             consecutive = 0;
             blocks = 2;
         }
+        
         return score;
     }
     

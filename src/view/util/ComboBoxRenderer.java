@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package view.util;
 
 import java.awt.Component;
@@ -23,6 +18,11 @@ public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
     
     public ComboBoxRenderer() {
         loadIcons();
+        initComponents();
+        
+    }
+    
+    private void initComponents() {
         setOpaque(true);
         setHorizontalAlignment(SwingConstants.CENTER);
         setVerticalAlignment(SwingConstants.CENTER);

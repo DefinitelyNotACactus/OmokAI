@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package view;
 
 import java.awt.event.ActionEvent;
@@ -12,6 +7,7 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import data.Mordekai;
 import data.Player;
+import view.ModeSelect.ModeEnum;
 
 /**
  *
@@ -26,7 +22,7 @@ public class Game extends JFrame {
     private Player black; // Human
     private Player white; // Player 2 (or Mordekai)
     
-    private boolean isAivsPlayer;
+    private ModeEnum mode;
     private boolean isAi;
     private boolean isAiComputing;
     
@@ -351,6 +347,7 @@ public class Game extends JFrame {
 
     private void btStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btStartActionPerformed
         Piece piece;
+        Mordekai ai;
         boardPanel.removeAll();
         for(int i = 0; i < 15; i++) {
             for(int j = 0; j < 15; j++) {
@@ -360,7 +357,11 @@ public class Game extends JFrame {
             }
         }
         if(white instanceof Mordekai) {
-            Mordekai ai = (Mordekai) white;
+            ai = (Mordekai) white;
+            ai.setBoard(board);
+        }
+        if(black instanceof Mordekai) {
+            ai = (Mordekai) black;
             ai.setBoard(board);
         }
         btStart.setVisible(false);
@@ -387,14 +388,16 @@ public class Game extends JFrame {
         turnLabel.setText("[" + getCurrentPlayer().getName() + "] turn");
         resetCounter();
         
-        isAi = !isAi;
-        if(isAiTurn() && isAivsPlayer) {
+        if(mode == ModeEnum.PLAYER_AI) {
+            isAi = !isAi;
+        }
+        if(isAiTurn() && (mode != ModeEnum.PLAYER_PLAYER)) {
             playAi();
         }
     }
     
     private void playAi() {
-        Mordekai ai = (Mordekai) white;
+        Mordekai ai = (Mordekai) getCurrentPlayer();
         ai.computeNextMove();
         ai.getWorker().execute();
     }
@@ -453,8 +456,8 @@ public class Game extends JFrame {
         revalidate();
     }
     
-    public void modeSelected(int mode, Player player1, Player player2) {
-        isAivsPlayer = (mode == 0);
+    public void modeSelected(ModeEnum mode, Player player1, Player player2) {
+        this.mode = mode;
         setBlack(player1);
         setWhite(player2);
         
@@ -507,14 +510,26 @@ public class Game extends JFrame {
         return board;
     }
     
-    public void setPieceOwnerAtPosition(int x, int y) {
-        board[y][x].setOwner(white); //Only the AI calls this method
+    public void setPieceOwnerAtPosition(Player owner, int x, int y) {
+        board[y][x].setOwner(owner); //Only the AI calls this method
         board[y][x].repaint();
         processTurn(x, y);
     }
     
+    public ModeEnum getMode() {
+        return mode;
+    }
+    
+    public int getTurnNumber() {
+        return turn;
+    }
+    
+    public boolean isWhiteTurn() {
+        return (getCurrentPlayer() == white);
+    }
+    
     public boolean isAiTurn() {
-        return isAi && isAivsPlayer;
+        return isAi && (mode != ModeEnum.PLAYER_PLAYER);
     }
     
     public boolean isAiComputing() {
