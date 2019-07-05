@@ -20,6 +20,7 @@ public class Mordekai extends Player {
     private Game game;
     private Piece[][] board;
     
+    private Piece[][] dummyBoard;
     private List<Pair> moves;
     private Pair nextMove;
     private SwingWorker<Pair, Void> worker;
@@ -137,11 +138,15 @@ public class Mordekai extends Player {
     
     private Pair calculateNextMove() {
         board = game.getBoard();
+        dummyBoard = copyBoard(board);
         game.setAiComputing(true);
         int x, y;
         long startTime = System.currentTimeMillis();
         // Check if any available move can finish the game
-        Object[] bestMove = searchWinningMove(); 
+        Object[] bestMove = null;
+        if(game.getTurn() >= 7) {
+            searchWinningMove();
+        } 
         if(bestMove != null ) {
             game.sendMessage("Finisher!");
             x = (Integer)(bestMove[2]);
@@ -167,14 +172,13 @@ public class Mordekai extends Player {
     }
     
     private Object[] searchWinningMove() {
-        List<Pair> allPossibleMoves = generateMoves(board);
+        generateMoves(board);
+        
         Object[] winningMove = new Object[3];
-
         // Iterate for all possible moves
-        for(Pair move : allPossibleMoves) {
+        for(Pair move : moves) {
             evaluationCount++;
             // Create a temporary board that is equivalent to the current board
-            Piece[][] dummyBoard = copyBoard(board);
             // Play the move to that temporary board without drawing anything
             dummyBoard[move.getI()][move.getJ()].setOwner(this);
             // If the white player has a winning score in that temporary board, return the move.
@@ -183,6 +187,7 @@ public class Mordekai extends Player {
                 winningMove[2] = move.getJ();
                 return winningMove;
             }
+            dummyBoard[move.getI()][move.getJ()].setOwner(null);
         }
         return null;
     }
@@ -210,18 +215,21 @@ public class Mordekai extends Player {
             return x;
         }
         Object[] bestMove = new Object[3];
+        //Copies the current game board
+        dummyBoard = copyBoard(board);
         if(max) {
             bestMove[0] = -1.0;
             // Iterate for all possible moves that can be made.
             for(Pair move : allPossibleMoves) {
-                // Create a temporary board that is equivalent to the current board
-                Piece[][] dummyBoard = copyBoard(board);
                 // Play the move to that temporary board without drawing anything
                 dummyBoard[move.getI()][move.getJ()].setOwner(this);
 
                 // Call the minimax function for the next depth, to look for a minimum score.
                 Object[] tempMove = minimaxSearchAB(depth-1, dummyBoard, !max, alpha, beta);
 
+                // Removes the move from the temporary board
+                dummyBoard[move.getI()][move.getJ()].setOwner(null);
+                
                 // Updating alpha
                 if((Double)(tempMove[0]) > alpha) {
                     alpha = (Double)(tempMove[0]);
@@ -241,9 +249,9 @@ public class Mordekai extends Player {
             bestMove[1] = allPossibleMoves.get(0).getI();
             bestMove[2] = allPossibleMoves.get(0).getJ();
             for(Pair move : allPossibleMoves) {
-                Piece[][] dummyBoard = copyBoard(board);
                 dummyBoard[move.getI()][move.getJ()].setOwner(game.getBlack());
                 Object[] tempMove = minimaxSearchAB(depth-1, dummyBoard, !max, alpha, beta);
+                dummyBoard[move.getI()][move.getJ()].setOwner(null);
                 // Updating beta
                 if(((Double)tempMove[0]) < beta) {
                     beta = (Double)(tempMove[0]);

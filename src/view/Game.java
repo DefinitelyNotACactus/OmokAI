@@ -12,6 +12,7 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import data.Mordekai;
 import data.Player;
+import view.util.SoundEffect;
 
 /**
  *
@@ -63,7 +64,7 @@ public class Game extends JFrame {
                 timerLabel.setText(String.format("%02d:%02d", counter/60, counter%60));
             }
         });
-
+        
         aState = 0;
         run = this::animatePieces;
         animationThread = new Thread(run);
@@ -351,6 +352,7 @@ public class Game extends JFrame {
 
     private void btStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btStartActionPerformed
         Piece piece;
+        SoundEffect.READY.play();
         boardPanel.removeAll();
         for(int i = 0; i < 15; i++) {
             for(int j = 0; j < 15; j++) {
@@ -369,7 +371,7 @@ public class Game extends JFrame {
         isAiComputing = false;
         turn = 1;
         isAi = true;
-        nextMove();
+        nextTurn();
         turnTimer.start();
         if(!animationThread.isAlive()) {
             animationThread.start();
@@ -377,19 +379,20 @@ public class Game extends JFrame {
         boardPanel.revalidate();
     }//GEN-LAST:event_btStartActionPerformed
 
-    private void nextMove() {
+    private void nextTurn() {
         turn++;
         if(turn > 225) {
             finishGame(true);
-        }
-        player1TurnLabel.setVisible(((turn%2) == 0));
-        player2TurnLabel.setVisible(((turn%2) == 1));
-        turnLabel.setText("[" + getCurrentPlayer().getName() + "] turn");
-        resetCounter();
-        
-        isAi = !isAi;
-        if(isAiTurn() && isAivsPlayer) {
-            playAi();
+        } else {
+            player1TurnLabel.setVisible(((turn%2) == 0));
+            player2TurnLabel.setVisible(((turn%2) == 1));
+            turnLabel.setText("[" + getCurrentPlayer().getName() + "] turn");
+            resetCounter();
+
+            isAi = !isAi;
+            if(isAiTurn() && isAivsPlayer) {
+                playAi();
+            }
         }
     }
     
@@ -400,10 +403,15 @@ public class Game extends JFrame {
     }
     
     public void processTurn(int x, int y) {
+        if(turn%2 == 0) {
+            SoundEffect.MUSHROOM.play();
+        } else {
+            SoundEffect.SLIME.play();
+        }
         if(searchCombo(x, y)) {
             finishGame(false);
         } else {
-            nextMove();
+            nextTurn();
         }
     }
     
@@ -459,6 +467,7 @@ public class Game extends JFrame {
         setWhite(player2);
         
         btStart.setEnabled(true); 
+        SoundEffect.ENTER.play();
         revalidate();
     }
     
@@ -490,7 +499,7 @@ public class Game extends JFrame {
         return ((turn%2 == 0) ? white : black);
     }
     
-    public boolean gameFinished() {
+    public boolean isGameFinished() {
         return finished;
     }
     
@@ -501,6 +510,10 @@ public class Game extends JFrame {
     
     public int getCounter() {
         return counter;
+    }
+    
+    public int getTurn() {
+        return turn;
     }
     
     public Piece[][] getBoard() {
@@ -541,6 +554,11 @@ public class Game extends JFrame {
         if(!tie) {
             getCurrentPlayer().addWin();
             getOtherPlayer().addLoss();
+            if(isAivsPlayer && getCurrentPlayer() != black) {
+                SoundEffect.LOOSE.play();
+            } else {
+                SoundEffect.WIN.play();
+            }
             player1WinsLabel.setText("" + black.getWins());
             player1LossesLabel.setText("" + black.getLosses());
             player2WinsLabel.setText("" + white.getWins());
@@ -548,6 +566,7 @@ public class Game extends JFrame {
         } else {
             getCurrentPlayer().addTie();
             getOtherPlayer().addTie();
+            SoundEffect.DRAW.play();
             player1TiesLabel.setText("" + black.getTies());
             player2TiesLabel.setText("" + white.getTies());
         }
@@ -603,7 +622,7 @@ public class Game extends JFrame {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Game.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         

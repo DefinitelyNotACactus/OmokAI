@@ -23,6 +23,10 @@ public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
     
     public ComboBoxRenderer() {
         loadIcons();
+        initComponents();
+    }
+    
+    private void initComponents() {
         setOpaque(true);
         setHorizontalAlignment(SwingConstants.CENTER);
         setVerticalAlignment(SwingConstants.CENTER);

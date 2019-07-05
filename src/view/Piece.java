@@ -42,7 +42,7 @@ public class Piece extends JButton implements Cloneable {
     }
     
     private void pieceActionPerformed(ActionEvent evt) {
-        if(isEmpty() && !game.gameFinished() && !game.isAiTurn()) {
+        if(isEmpty() && !game.isGameFinished() && !game.isAiTurn() && !game.isAiComputing()) {
             setOwner(game.getCurrentPlayer()); // The ai will never call this method with a false parameter
             setIcon(owner.getIconState(game.getAnimationState()));
             game.processTurn(x, y);
